@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Елизавета Винокурова](https://up.htmlacademy.ru/javascript/13/user/123355).
-* Наставник: `Неизвестно`.
+* Наставник: [✌ Филипп Шамсиев ✌](https://up.htmlacademy.ru/htmlcss/20/user/70260).
 
 ---
 
