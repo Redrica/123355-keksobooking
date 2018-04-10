@@ -17,6 +17,8 @@ var MAX_Y = 500;
 var MIN_GUESTS = 1;
 var MAX_GUESTS = 100;
 var DECLARATIONS_QUANTITY = 8;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
 
 
 // функция для расчета случайного индекса элемента массива
@@ -89,7 +91,7 @@ var createRandomDeclaration = function (titles, minX, maxX, minY, maxY, minPrice
   location.y = locationY;
 
   var declaration = {};
-  // declaration.author = author;
+  declaration.author = author;
   declaration.offer = offer;
   declaration.location = location;
 
@@ -107,3 +109,21 @@ for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
 
 var map = document.querySelector('.map');
 map.classList.remove('.map--faded');
+
+var mapPins = document.querySelector('.map__pins');
+var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+
+var renderPins = function (index) {
+  var pinElement = mapPinTemplate.cloneNode(true);
+  pinElement.style = 'left: ' + (declarationsList[index].location.x - PIN_WIDTH / 2) + 'px; top: ' + (declarationsList[index].location.y - PIN_HEIGHT) + 'px;';
+  pinElement.querySelector('img').alt = declarationsList[index].offer.titles;
+  pinElement.querySelector('img').src = declarationsList[index].author.avatar;
+  return pinElement;
+};
+
+var fragment = document.createDocumentFragment();
+for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
+  fragment.appendChild(renderPins(i));
+}
+
+mapPins.appendChild(fragment);
