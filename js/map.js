@@ -29,15 +29,14 @@ var getRandomNumber = function (min, max) {
   return Math.round(Math.random() * (max - min)) + min;
 };
 
-// генерация массива с адресами аватарок
-var avatars = [];
-for (var i = 0; i < MAX_PICTURE_NUMBER; i++) {
-  avatars[i] = 'img/avatars/user0' + (i + 1) + '.png';
-}
-
 // функция генерации объявления по заданным параметрам
 var createRandomDeclaration = function (titles, minX, maxX, minY, maxY, minPrice, maxPrice, type, rooms, minGuests, maxGuests, checkTime, featuresOptions, photosCollection) {
   var author = {};
+  // генерация массива с адресами аватарок
+  var avatars = [];
+  for (var i = 0; i < MAX_PICTURE_NUMBER; i++) {
+    avatars[i] = 'img/avatars/user0' + (i + 1) + '.png';
+  }
   var randomIndexAvatars = calculateRandomIndex(avatars);
   author.avatar = avatars[randomIndexAvatars];
   avatars.splice(randomIndexAvatars, 1);
@@ -90,7 +89,7 @@ var createRandomDeclaration = function (titles, minX, maxX, minY, maxY, minPrice
   location.y = locationY;
 
   var declaration = {};
-  declaration.author = author;
+  // declaration.author = author;
   declaration.offer = offer;
   declaration.location = location;
 
@@ -102,7 +101,7 @@ var declarationsList = [];
 var titles = TITLES.slice();
 var featuresOptions = FEATURES_OPTIONS.slice();
 var photosCollection = PHOTOS_COLLECTION.slice();
-for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
+for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
   declarationsList[i] = createRandomDeclaration(titles, MIN_X, MAX_X, MIN_Y, MAX_Y, MIN_PRICE, MAX_PRICE, TYPES, ROOMS, MIN_GUESTS, MAX_GUESTS, CHECK_TIMES, featuresOptions, photosCollection);
 }
 
