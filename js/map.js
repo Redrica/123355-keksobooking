@@ -32,7 +32,7 @@ var getRandomNumber = function (min, max) {
   return Math.round(Math.random() * (max - min)) + min;
 };
 // функция генерации объявления по заданным параметрам
-var createRandomDeclaration = function (titles, minX, maxX, minY, maxY, minPrice, maxPrice, type, rooms, minGuests, maxGuests, checkTime, photosCollection) {
+var createRandomDeclaration = function (i, titles, minX, maxX, minY, maxY, minPrice, maxPrice, type, rooms, minGuests, maxGuests, checkTime, photosCollection) {
   var author = {};
 
   // var pictureNumbers = PICTURE_NUMBERS.slice();
@@ -41,13 +41,13 @@ var createRandomDeclaration = function (titles, minX, maxX, minY, maxY, minPrice
   // pictureNumbers.splice(randomIndexAvatars, 1);
 
   // генерация массива с адресами аватарок
-  var avatars = [];
-  for (var i = 0; i < PICTURE_MAX_NUMBER; i++) {
-    avatars[i] = 'img/avatars/user0' + (i + 1) + '.png';
-  }
-  var randomIndexAvatars = calculateRandomIndex(avatars);
-  author.avatar = avatars[randomIndexAvatars];
-  avatars.splice(randomIndexAvatars, 1);
+  // var avatars = [];
+  // for (var i = 0; i < PICTURE_MAX_NUMBER; i++) {
+  //   avatars[i] = 'img/avatars/user0' + (i + 1) + '.png';
+  // }
+  // var randomIndexAvatars = calculateRandomIndex(avatars);
+  author.avatar = 'img/avatars/user0' + (i + 1) + '.png';
+  // avatars.splice(randomIndexAvatars, 1);
 
   // выбираем случайное название без возможности повторения
   var offer = {};
@@ -110,7 +110,7 @@ var declarationsList = [];
 var titles = TITLES.slice();
 var photosCollection = PHOTOS_COLLECTION.slice();
 for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
-  declarationsList[i] = createRandomDeclaration(titles, MIN_X, MAX_X, MIN_Y, MAX_Y, MIN_PRICE, MAX_PRICE, TYPES, ROOMS, MIN_GUESTS, MAX_GUESTS, CHECK_TIMES, photosCollection);
+  declarationsList[i] = createRandomDeclaration(i, titles, MIN_X, MAX_X, MIN_Y, MAX_Y, MIN_PRICE, MAX_PRICE, TYPES, ROOMS, MIN_GUESTS, MAX_GUESTS, CHECK_TIMES, photosCollection);
 }
 
 // начинается отрисовка DOM
@@ -137,17 +137,19 @@ mapPins.appendChild(pinsFragment);
 var mapFilters = document.querySelector('.map__filters-container');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
-var renderCards = function (index) {
+
+
+
+var renderCard = function (index) {
+  // клонирую шаблон
   var cardElement = cardTemplate.cloneNode(true);
 
-  // попытка удалить весь список удобств, чтоб потом его собраться заново
-  // var featuresList = cardElement.querySelector('.popup__features');
-  // cardElement.removeChild(featuresList);
-
+  // прописываю текст и атрибуты для элементов в шаблоне, данные - из сгенерированного массива данных
   cardElement.querySelector('.popup__avatar').src = declarationsList[index].author.avatar;
   cardElement.querySelector('.popup__title').textContent = declarationsList[index].offer.title;
   cardElement.querySelector('.popup__text--address').textContent = declarationsList[index].offer.address;
   cardElement.querySelector('.popup__text--price').textContent = declarationsList[index].offer.price + '₽/ночь';
+  // определяю тип (будет текст) в зависимости от заданного в массиве данных
   if (declarationsList[index].offer.type === 'flat') {
     cardElement.querySelector('.popup__type').textContent = 'Квартира';
   }
@@ -164,7 +166,20 @@ var renderCards = function (index) {
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + declarationsList[index].offer.checkin + ', выезд до ' + declarationsList[index].offer.checkout;
 
   // FEATURES
-  // cardElement.querySelector('.popup__features').textContent = 'Заезд после ' + declarationsList[0].offer.checkin + ', выезд до ' + declarationsList[0].offer.checkout;
+  // удаляю имеющиеся элементы списка
+  var featuresList = cardElement.querySelector('.popup__features');
+  while (featuresList.firstChild) {
+    featuresList.removeChild(featuresList.firstChild);
+  }
+  var featuresAvailable = declarationsList[index].offer.features;
+  for (i = 0; i < featuresAvailable.length; i++) {
+    var featuresItem = document.createElement('li');
+    var featureClass = 'popup__feature--' + featuresAvailable[i];
+    featuresItem.classList.add('popup__feature', featureClass);
+    featuresList.appendChild(featuresItem);
+  }
+
+
 
 
   cardElement.querySelector('.popup__description').textContent = declarationsList[index].offer.description;
@@ -185,6 +200,12 @@ var renderCards = function (index) {
     cardPictures.appendChild(pictureElement);
   }
 
+  // var featuresList = document.querySelector('.popup__features');
+  // var newListItem = document.createElement('li');
+  // newListItem.className = 'XXXXXXXX';
+  // featuresList.appendChild(newListItem);
+
+
   // вот где-то тут я и запуталась окончательно.
 
   // var featuresList = map.querySelectorAll('.popup__features');
@@ -198,10 +219,16 @@ var renderCards = function (index) {
   // });
   return cardElement;
 };
+// renderCards(0);
+// var cardsFragment = document.createDocumentFragment();
+// for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
+//   cardsFragment.appendChild(renderCards(i));
+// }
 
-var cardsFragment = document.createDocumentFragment();
-for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
-  cardsFragment.appendChild(renderCards(i));
-}
+map.insertBefore(renderCard(0), mapFilters);
 
-map.insertBefore(cardsFragment, mapFilters);
+
+// for (i = 0; i < list.length; i++) {
+//   var li = list[i];
+//   li.parentNode.removeChild(li[i]);
+// }
