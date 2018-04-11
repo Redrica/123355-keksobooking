@@ -1,6 +1,7 @@
 'use strict';
 
-var MAX_PICTURE_NUMBER = 8;
+// var PICTURE_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8];
+var PICTURE_MAX_NUMBER = 8;
 var TITLES = ['"Большая уютная квартира"', '"Маленькая неуютная квартира"', '"Огромный прекрасный дворец"', '"Маленький ужасный дворец"', '"Красивый гостевой домик"', '"Некрасивый негостеприимный домик"', '"Уютное бунгало далеко от моря"', '"Неуютное бунгало по колено в воде"'];
 var MIN_PRICE = 1000;
 var MAX_PRICE = 1000000;
@@ -30,13 +31,18 @@ var calculateRandomIndex = function (arr) {
 var getRandomNumber = function (min, max) {
   return Math.round(Math.random() * (max - min)) + min;
 };
-
 // функция генерации объявления по заданным параметрам
 var createRandomDeclaration = function (titles, minX, maxX, minY, maxY, minPrice, maxPrice, type, rooms, minGuests, maxGuests, checkTime, photosCollection) {
   var author = {};
+
+  // var pictureNumbers = PICTURE_NUMBERS.slice();
+  // var randomIndexAvatars = calculateRandomIndex(pictureNumbers);
+  // author.avatar = 'img/avatars/user0' + pictureNumbers[randomIndexAvatars] + '.png';
+  // pictureNumbers.splice(randomIndexAvatars, 1);
+
   // генерация массива с адресами аватарок
   var avatars = [];
-  for (var i = 0; i < MAX_PICTURE_NUMBER; i++) {
+  for (var i = 0; i < PICTURE_MAX_NUMBER; i++) {
     avatars[i] = 'img/avatars/user0' + (i + 1) + '.png';
   }
   var randomIndexAvatars = calculateRandomIndex(avatars);
@@ -122,72 +128,80 @@ var renderPins = function (index) {
   return pinElement;
 };
 
-var fragment = document.createDocumentFragment();
+var pinsFragment = document.createDocumentFragment();
 for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
-  fragment.appendChild(renderPins(i));
+  pinsFragment.appendChild(renderPins(i));
 }
-mapPins.appendChild(fragment);
+mapPins.appendChild(pinsFragment);
 
 var mapFilters = document.querySelector('.map__filters-container');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
-var cardElement = cardTemplate.cloneNode(true);
-cardElement.querySelector('.popup__avatar').src = declarationsList[0].author.avatar;
-cardElement.querySelector('.popup__title').textContent = declarationsList[0].offer.title;
-cardElement.querySelector('.popup__text--address').textContent = declarationsList[0].offer.address;
-cardElement.querySelector('.popup__text--price').textContent = declarationsList[0].offer.price + '₽/ночь';
-if (declarationsList[0].offer.type === 'flat') {
-  cardElement.querySelector('.popup__type').textContent = 'Квартира';
-}
-if (declarationsList[0].offer.type === 'bungalo') {
-  cardElement.querySelector('.popup__type').textContent = 'Бунгало';
-}
-if (declarationsList[0].offer.type === 'house') {
-  cardElement.querySelector('.popup__type').textContent = 'Дом';
-}
-if (declarationsList[0].offer.type === 'palace') {
-  cardElement.querySelector('.popup__type').textContent = 'Дворец';
-}
-cardElement.querySelector('.popup__text--capacity').textContent = declarationsList[0].offer.rooms + ' комнаты для ' + declarationsList[0].offer.guests + ' гостей.';
-cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + declarationsList[0].offer.checkin + ', выезд до ' + declarationsList[0].offer.checkout;
+var renderCards = function (index) {
+  var cardElement = cardTemplate.cloneNode(true);
 
-// FEATURES
-// cardElement.querySelector('.popup__features').textContent = 'Заезд после ' + declarationsList[0].offer.checkin + ', выезд до ' + declarationsList[0].offer.checkout;
+  // попытка удалить весь список удобств, чтоб потом его собраться заново
+  // var featuresList = cardElement.querySelector('.popup__features');
+  // cardElement.removeChild(featuresList);
 
-
-cardElement.querySelector('.popup__description').textContent = declarationsList[0].offer.description;
-
-var cardPictures = cardElement.querySelector('.popup__photos');
-var pictureTemplate = cardElement.querySelector('.popup__photo');
-
-// задаю имеющейся в разметке картинке адрес из первой строки массива с фотографиями
-pictureTemplate.src = declarationsList[0].offer.photos[0];
-
-// удаляю эту строку из массива
-declarationsList[0].offer.photos.splice(0, 1);
-
-// отрисовываю остальные фотографии из массива (за вычетом первой)
-for (var j = 0; j < declarationsList[0].offer.photos.length; j++) {
-  var pictureElement = pictureTemplate.cloneNode();
-  cardPictures.querySelector('.popup__photo').src = declarationsList[0].offer.photos[j];
-  cardPictures.appendChild(pictureElement);
-}
-
-var popupFeatures = map.querySelector('.popup__features');
-var featureItems = map.querySelectorAll('.popup__feature');
-Array.prototype.forEach.call(featureItems, function(item) {
-  if (!item.classList.contains('popup__feature--' + declarationsList[0].offer.features[0] + '')) {
-    popupFeatures.removeChild(li);
+  cardElement.querySelector('.popup__avatar').src = declarationsList[index].author.avatar;
+  cardElement.querySelector('.popup__title').textContent = declarationsList[index].offer.title;
+  cardElement.querySelector('.popup__text--address').textContent = declarationsList[index].offer.address;
+  cardElement.querySelector('.popup__text--price').textContent = declarationsList[index].offer.price + '₽/ночь';
+  if (declarationsList[index].offer.type === 'flat') {
+    cardElement.querySelector('.popup__type').textContent = 'Квартира';
   }
-});
+  if (declarationsList[index].offer.type === 'bungalo') {
+    cardElement.querySelector('.popup__type').textContent = 'Бунгало';
+  }
+  if (declarationsList[index].offer.type === 'house') {
+    cardElement.querySelector('.popup__type').textContent = 'Дом';
+  }
+  if (declarationsList[index].offer.type === 'palace') {
+    cardElement.querySelector('.popup__type').textContent = 'Дворец';
+  }
+  cardElement.querySelector('.popup__text--capacity').textContent = declarationsList[index].offer.rooms + ' комнаты для ' + declarationsList[index].offer.guests + ' гостей.';
+  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + declarationsList[index].offer.checkin + ', выезд до ' + declarationsList[index].offer.checkout;
 
-// var offerFeatures = declarationsList[0].offer.features;
-// for (j = 0; j < offerFeatures.length; j++) {
-//   if (featureItem.classList)
-// }
+  // FEATURES
+  // cardElement.querySelector('.popup__features').textContent = 'Заезд после ' + declarationsList[0].offer.checkin + ', выезд до ' + declarationsList[0].offer.checkout;
 
-  // cardPictures.querySelector('.popup__photo').src = declarationsList[0].offer.photos[0];
-// }
-// cardPictures.appendChild(pictureElement);
 
-map.insertBefore(cardElement, mapFilters);
+  cardElement.querySelector('.popup__description').textContent = declarationsList[index].offer.description;
+
+  var cardPictures = cardElement.querySelector('.popup__photos');
+  var pictureTemplate = cardElement.querySelector('.popup__photo');
+
+  // задаю имеющейся в разметке картинке адрес из первой строки массива с фотографиями
+  pictureTemplate.src = declarationsList[index].offer.photos[0];
+
+  // удаляю эту строку из массива
+  declarationsList[index].offer.photos.splice(0, 1);
+
+  // отрисовываю остальные фотографии из массива (за вычетом первой)
+  for (var j = 0; j < declarationsList[index].offer.photos.length; j++) {
+    var pictureElement = pictureTemplate.cloneNode();
+    cardPictures.querySelector('.popup__photo').src = declarationsList[index].offer.photos[j];
+    cardPictures.appendChild(pictureElement);
+  }
+
+  // вот где-то тут я и запуталась окончательно.
+
+  // var featuresList = map.querySelectorAll('.popup__features');
+  // map.removeChild(featuresList);
+
+  // var featureItems = map.querySelectorAll('.popup__feature');
+  // Array.prototype.forEach.call(featureItems, function(item) {
+  //   if (!item.classList.contains('popup__feature--' + declarationsList[index].offer.features[0] + '')) {
+  //     item.classList.add('hidden');
+  //   }
+  // });
+  return cardElement;
+};
+
+var cardsFragment = document.createDocumentFragment();
+for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
+  cardsFragment.appendChild(renderCards(i));
+}
+
+map.insertBefore(cardsFragment, mapFilters);
