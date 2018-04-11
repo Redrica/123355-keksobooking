@@ -165,8 +165,7 @@ var renderCard = function (index) {
   cardElement.querySelector('.popup__text--capacity').textContent = declarationsList[index].offer.rooms + ' комнаты для ' + declarationsList[index].offer.guests + ' гостей.';
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + declarationsList[index].offer.checkin + ', выезд до ' + declarationsList[index].offer.checkout;
 
-  // FEATURES
-  // удаляю имеющиеся элементы списка
+  // блок features - удаляю имеющиеся элементы списка, создаю новые с классами в соответствии с доступными услугами
   var featuresList = cardElement.querySelector('.popup__features');
   while (featuresList.firstChild) {
     featuresList.removeChild(featuresList.firstChild);
@@ -178,9 +177,6 @@ var renderCard = function (index) {
     featuresItem.classList.add('popup__feature', featureClass);
     featuresList.appendChild(featuresItem);
   }
-
-
-
 
   cardElement.querySelector('.popup__description').textContent = declarationsList[index].offer.description;
 
@@ -200,35 +196,21 @@ var renderCard = function (index) {
     cardPictures.appendChild(pictureElement);
   }
 
-  // var featuresList = document.querySelector('.popup__features');
-  // var newListItem = document.createElement('li');
-  // newListItem.className = 'XXXXXXXX';
-  // featuresList.appendChild(newListItem);
 
-
-  // вот где-то тут я и запуталась окончательно.
-
-  // var featuresList = map.querySelectorAll('.popup__features');
-  // map.removeChild(featuresList);
-
-  // var featureItems = map.querySelectorAll('.popup__feature');
-  // Array.prototype.forEach.call(featureItems, function(item) {
-  //   if (!item.classList.contains('popup__feature--' + declarationsList[index].offer.features[0] + '')) {
-  //     item.classList.add('hidden');
-  //   }
-  // });
   return cardElement;
 };
-// renderCards(0);
-// var cardsFragment = document.createDocumentFragment();
-// for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
-//   cardsFragment.appendChild(renderCards(i));
-// }
 
 map.insertBefore(renderCard(0), mapFilters);
 
-
-// for (i = 0; i < list.length; i++) {
-//   var li = list[i];
-//   li.parentNode.removeChild(li[i]);
-// }
+// неудавшаяся попытка пройти через forEach
+// var featureItems = cardElement.querySelectorAll('.popup__feature');
+// var featuresAvailable = declarationsList[index].offer.features;
+// Array.prototype.forEach.call(featureItems, function(item) {
+//   for (i = 0; i < featuresAvailable.length; i++) {
+//     var className = 'popup__feature--' + featuresAvailable[i];
+//     if (!item.classList.contains(className)) {
+//       console.log(item.classList);
+//       item.parentNode.removeChild(item);
+//     }
+//   }
+// });
