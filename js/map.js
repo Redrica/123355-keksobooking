@@ -1,10 +1,10 @@
 'use strict';
 
 // var PICTURE_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8];
-var PICTURE_MAX_NUMBER = 8;
+var MAX_PICTURE_NUMBER = 8;
 var TITLES = ['"Большая уютная квартира"', '"Маленькая неуютная квартира"', '"Огромный прекрасный дворец"', '"Маленький ужасный дворец"', '"Красивый гостевой домик"', '"Некрасивый негостеприимный домик"', '"Уютное бунгало далеко от моря"', '"Неуютное бунгало по колено в воде"'];
 var MIN_PRICE = 1000;
-var MAX_PRICE = 1000000;
+var MAX_PRICE = 10000;
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var ROOMS = [1, 2, 3, 4, 5];
 var CHECK_TIMES = ['12:00', '13:00', '14:00'];
@@ -31,95 +31,98 @@ var calculateRandomIndex = function (arr) {
 var getRandomNumber = function (min, max) {
   return Math.round(Math.random() * (max - min)) + min;
 };
-// функция генерации объявления по заданным параметрам
-var createRandomDeclaration = function (i, titles, minX, maxX, minY, maxY, minPrice, maxPrice, type, rooms, minGuests, maxGuests, checkTime, photosCollection) {
-  var author = {};
 
-  // var pictureNumbers = PICTURE_NUMBERS.slice();
-  // var randomIndexAvatars = calculateRandomIndex(pictureNumbers);
-  // author.avatar = 'img/avatars/user0' + pictureNumbers[randomIndexAvatars] + '.png';
-  // pictureNumbers.splice(randomIndexAvatars, 1);
+// функция выбора случайного элемента массива без повторений
+var getRandomElement = function (arr) {
+  var randomIndex = calculateRandomIndex(arr);
+  var arrCopy = arr.slice();
+  var text = arr[randomIndex];
+  arrCopy.splice(randomIndex, 1);
+  return text;
+};
 
-  // генерация массива с адресами аватарок
-  // var avatars = [];
-  // for (var i = 0; i < PICTURE_MAX_NUMBER; i++) {
-  //   avatars[i] = 'img/avatars/user0' + (i + 1) + '.png';
-  // }
-  // var randomIndexAvatars = calculateRandomIndex(avatars);
-  author.avatar = 'img/avatars/user0' + (i + 1) + '.png';
-  // avatars.splice(randomIndexAvatars, 1);
-
-  // выбираем случайное название без возможности повторения
-  var offer = {};
-  var randomIndexTitle = calculateRandomIndex(titles);
-  offer.title = titles[randomIndexTitle];
-  titles.splice(randomIndexTitle, 1);
-
-  // вычисляем случайные координаты объекта
-  var locationX = getRandomNumber(minX, maxX);
-  var locationY = getRandomNumber(minY, maxY);
-  offer.address = locationX + ', ' + locationY;
-  // случайная цена из диапазона
-  offer.price = getRandomNumber(minPrice, maxPrice);
-  // выбираем тип жилья из доступных
-  offer.type = type[calculateRandomIndex(type)];
-  // случайное количество комнат из диапазона
-  offer.rooms = rooms[calculateRandomIndex(rooms)];
-  // случайное количество гостей из диапазона
-  offer.guests = getRandomNumber(minGuests, maxGuests);
-  // случайное время заезда/выезда из доступных
-  offer.checkin = checkTime[calculateRandomIndex(checkTime)];
-  offer.checkout = checkTime[calculateRandomIndex(checkTime)];
-
-  // создание массива "дополнительных услуг" случайной длины на основе массива с доступными услугами
-  var features = [];
-  var featuresOptions = FEATURES_OPTIONS.slice();
-  features.length = getRandomNumber(MIN_ARRAY_LENGTH, featuresOptions.length);
-  for (i = 0; i < features.length; i++) {
-    var randomIndexFeatures = calculateRandomIndex(featuresOptions);
-    features[i] = featuresOptions[randomIndexFeatures];
-    featuresOptions.splice(randomIndexFeatures, 1);
-  }
-  offer.features = features;
-
-  offer.description = '';
-  // вывод доступных фотографий объекта в случайном порядке
+var getRandomPictures = function (arr) {
   var photos = [];
-  var photosCopy = photosCollection.slice();
-  for (i = 0; i < photosCollection.length; i++) {
-    var randomIndexPhotos = calculateRandomIndex(photosCopy);
-    photos[i] = photosCopy[randomIndexPhotos];
-    photosCopy.splice(randomIndexPhotos, 1);
+  var photosCopy = arr.slice();
+  for (var j = 0; j < arr.length; j++) {
+    var randomIndex = calculateRandomIndex(photosCopy);
+    photos[j] = photosCopy[randomIndex];
+    photosCopy.splice(randomIndex, 1);
   }
-  offer.photos = photos;
+  return photos;
+};
 
-  var location = {};
-  location.x = locationX;
-  location.y = locationY;
+// функция, перемешивающая массив
+var getMixedArray = function (arr) {
+  var mixedArray = [];
+  var originalArray = arr.slice();
+  mixedArray.length = getRandomNumber(MIN_ARRAY_LENGTH, originalArray.length);
+  for (var j = 0; j < mixedArray.length; j++) {
+    var randomIndex = calculateRandomIndex(originalArray);
+    mixedArray[j] = originalArray[randomIndex];
+    originalArray.splice(randomIndex, 1);
+  }
+  return mixedArray;
+};
 
-  var declaration = {};
-  declaration.author = author;
-  declaration.offer = offer;
-  declaration.location = location;
+// генерация массива картинок с ведущим нулём
+var avatarsArray = [];
+for (var j = 0; j < MAX_PICTURE_NUMBER; j++) {
+  avatarsArray[j] = 'img/avatars/user0' + (j + 1) + '.png';
+}
 
-  return declaration;
+// получание рандомной картинки из массива, повторение исключено
+var getRandomAvatar = function (arr) {
+  var randomIndex = calculateRandomIndex(arr);
+  var randomAvatar = arr[randomIndex];
+  arr.splice(randomIndex, 1);
+  return randomAvatar;
+};
+
+// функция генерации объявления по заданным параметрам
+var createRandomDeclaration = function () {
+  var objectLocation = {
+    x: getRandomNumber(MIN_X, MAX_X),
+    y: getRandomNumber(MIN_Y, MAX_Y)
+  };
+
+  return {
+    author: {
+      avatar: getRandomAvatar(avatarsArray)
+    },
+
+    offer: {
+      title: getRandomElement(TITLES),
+      address: objectLocation.x + ', ' + objectLocation.y,
+      price: getRandomNumber(MIN_PRICE, MAX_PRICE),
+      type: TYPES[calculateRandomIndex(TYPES)],
+      rooms: ROOMS[calculateRandomIndex(ROOMS)],
+      guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
+      checkin: CHECK_TIMES[calculateRandomIndex(CHECK_TIMES)],
+      checkout: CHECK_TIMES[calculateRandomIndex(CHECK_TIMES)],
+      features: getMixedArray(FEATURES_OPTIONS),
+      description: '',
+      photos: getRandomPictures(PHOTOS_COLLECTION)
+    },
+
+    location: objectLocation
+  };
 };
 
 // создание массива сгенерированных объявлений
 var declarationsList = [];
-var titles = TITLES.slice();
-var photosCollection = PHOTOS_COLLECTION.slice();
 for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
-  declarationsList[i] = createRandomDeclaration(i, titles, MIN_X, MAX_X, MIN_Y, MAX_Y, MIN_PRICE, MAX_PRICE, TYPES, ROOMS, MIN_GUESTS, MAX_GUESTS, CHECK_TIMES, photosCollection);
+  declarationsList[i] = createRandomDeclaration(i);
 }
 
-// начинается отрисовка DOM
+// начинается работа с DOM
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
+// функция создания шаблона метки с вставкой данных из массива объяслений
 var renderPins = function (index) {
   var pinElement = mapPinTemplate.cloneNode(true);
   pinElement.style = 'left: ' + (declarationsList[index].location.x - PIN_WIDTH / 2) + 'px; top: ' + (declarationsList[index].location.y - PIN_HEIGHT) + 'px;';
@@ -128,6 +131,7 @@ var renderPins = function (index) {
   return pinElement;
 };
 
+// отрисовка меток во фрагмент и отрисовка фрагмента в DOM
 var pinsFragment = document.createDocumentFragment();
 for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
   pinsFragment.appendChild(renderPins(i));
@@ -136,9 +140,6 @@ mapPins.appendChild(pinsFragment);
 
 var mapFilters = document.querySelector('.map__filters-container');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
-
-
-
 
 var renderCard = function (index) {
   // клонирую шаблон
@@ -190,19 +191,17 @@ var renderCard = function (index) {
   declarationsList[index].offer.photos.splice(0, 1);
 
   // отрисовываю остальные фотографии из массива (за вычетом первой)
-  for (var j = 0; j < declarationsList[index].offer.photos.length; j++) {
+  for (j = 0; j < declarationsList[index].offer.photos.length; j++) {
     var pictureElement = pictureTemplate.cloneNode();
     cardPictures.querySelector('.popup__photo').src = declarationsList[index].offer.photos[j];
     cardPictures.appendChild(pictureElement);
   }
-
-
   return cardElement;
 };
 
 map.insertBefore(renderCard(0), mapFilters);
 
-// неудавшаяся попытка пройти через forEach
+// неудавшаяся попытка пройти через forEach, удается выбрать только те элементы, которые _содержат_ требуемый класс. А надо - НЕ содержат.
 // var featureItems = cardElement.querySelectorAll('.popup__feature');
 // var featuresAvailable = declarationsList[index].offer.features;
 // Array.prototype.forEach.call(featureItems, function(item) {
@@ -214,3 +213,7 @@ map.insertBefore(renderCard(0), mapFilters);
 //     }
 //   }
 // });
+
+// "обычный" адрес, если без генерации
+// avatar: 'img/avatars/user0' + (index + 1) + '.png'
+
