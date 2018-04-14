@@ -3,7 +3,7 @@
 var MAX_PICTURE_NUMBER = 8;
 var TITLES = ['"Большая уютная квартира"', '"Маленькая неуютная квартира"', '"Огромный прекрасный дворец"', '"Маленький ужасный дворец"', '"Красивый гостевой домик"', '"Некрасивый негостеприимный домик"', '"Уютное бунгало далеко от моря"', '"Неуютное бунгало по колено в воде"'];
 var MIN_PRICE = 1000;
-var MAX_PRICE = 10000;
+var MAX_PRICE = 1000000;
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var ROOMS = [1, 2, 3, 4, 5];
 var CHECK_TIMES = ['12:00', '13:00', '14:00'];
@@ -19,6 +19,11 @@ var MAX_GUESTS = 20;
 var DECLARATIONS_QUANTITY = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_ACTIVE_HEIGHT = 87;
+var MAIN_PIN_LEFT_COORD = 570;
+var MAIN_PIN_TOP_COORD = 375;
+var HALF_SIZE = 0.5;
 
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
@@ -99,7 +104,6 @@ for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
 }
 
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
 
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -115,9 +119,8 @@ var pinsFragment = document.createDocumentFragment();
 for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
   pinsFragment.appendChild(renderPins(i));
 }
-mapPins.appendChild(pinsFragment);
 
-var mapFilters = document.querySelector('.map__filters-container');
+var mapFiltersContainer = document.querySelector('.map__filters-container');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
 var deleteInner = function (element) {
@@ -180,4 +183,60 @@ var renderCard = function (index) {
   return cardElement;
 };
 
-map.insertBefore(renderCard(5), mapFilters);
+map.insertBefore(renderCard(5), mapFiltersContainer);
+
+// ПОЛЬЗОВАТЕЛЬСКИЕ СОБЫТИЯ
+
+// !!! в неактивном состоянии меню выбора невидимое, но доступно. Тоже disadled?
+var mapFilter = mapFiltersContainer.querySelectorAll('.map__filter');
+var mapFeatures = mapFiltersContainer.querySelector('.map__features');
+var adForm = document.querySelector('.ad-form');
+var adFormHeaderInput = document.querySelector('.ad-form-header__input');
+var adFormElement = document.querySelectorAll('.ad-form__element');
+
+// фильтры почему-то активные, хоть и скрыты, поэтому добавляю disabled для неактивного сотояния
+Array.prototype.forEach.call(mapFilter, function (elem) {
+  elem.disabled = true;
+});
+mapFeatures.disabled = true;
+
+Array.prototype.forEach.call(adFormElement, function (elem) {
+  elem.disabled = true;
+});
+adFormHeaderInput.disabled = true;
+
+var mainPin = map.querySelector('.map__pin--main');
+var addressField = document.querySelector('[name=address]');
+var mapPinElement = map.querySelectorAll('.map__pin');
+var declarationCard = map.querySelector('.map__card');
+
+var getMainPinStartCoord = function () {
+  var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(MAIN_PIN_TOP_COORD + MAIN_PIN_ACTIVE_HEIGHT * HALF_SIZE);
+  return mainPinCoordX + ', ' + mainPinCoordY;
+};
+
+mainPin.addEventListener('mouseup', function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+
+  mapPins.appendChild(pinsFragment);
+
+  Array.prototype.forEach.call(mapFilter, function (elem) {
+    elem.disabled = false;
+  });
+  mapFeatures.disabled = false;
+
+  Array.prototype.forEach.call(adFormElement, function (elem) {
+    elem.disabled = false;
+  });
+  adFormHeaderInput.disabled = false;
+
+  addressField.value = getMainPinStartCoord();
+
+  Array.prototype.forEach.call(mapPinElement, function (evt) {
+    evt.preventDefault();
+    declarationCard.cl
+
+  })
+});
