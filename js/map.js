@@ -24,6 +24,7 @@ var MAIN_PIN_ACTIVE_HEIGHT = 87;
 var MAIN_PIN_LEFT_COORD = 570;
 var MAIN_PIN_TOP_COORD = 375;
 var HALF_SIZE = 0.5;
+var ENTER_KEYCODE = 13;
 
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
@@ -112,6 +113,7 @@ var renderPins = function (index) {
   pinElement.style = 'left: ' + (declarationsList[index].location.x - PIN_WIDTH / 2) + 'px; top: ' + (declarationsList[index].location.y - PIN_HEIGHT) + 'px;';
   pinElement.querySelector('img').alt = declarationsList[index].offer.title;
   pinElement.querySelector('img').src = declarationsList[index].author.avatar;
+  pinElement.setAttribute('data-number', [i]);
   return pinElement;
 };
 
@@ -180,10 +182,12 @@ var renderCard = function (index) {
     cardPictures.querySelector('.popup__photo').src = declarationsList[index].offer.photos[j];
     cardPictures.appendChild(pictureElement);
   }
+
+  cardElement.dataset.dataTest = 'test';
   return cardElement;
 };
 
-map.insertBefore(renderCard(5), mapFiltersContainer);
+// map.insertBefore(renderCard(5), mapFiltersContainer);
 
 // ПОЛЬЗОВАТЕЛЬСКИЕ СОБЫТИЯ
 
@@ -208,7 +212,7 @@ adFormHeaderInput.disabled = true;
 var mainPin = map.querySelector('.map__pin--main');
 var addressField = document.querySelector('[name=address]');
 var mapPinElement = map.querySelectorAll('.map__pin');
-var declarationCard = map.querySelector('.map__card');
+// var declarationCard = document.querySelector('.map__card');
 
 var getMainPinStartCoord = function () {
   var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
@@ -233,10 +237,29 @@ mainPin.addEventListener('mouseup', function () {
   adFormHeaderInput.disabled = false;
 
   addressField.value = getMainPinStartCoord();
-
-  Array.prototype.forEach.call(mapPinElement, function (evt) {
-    evt.preventDefault();
-    declarationCard.cl
-
-  })
 });
+
+mainPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    map.classList.remove('map--faded');
+  }
+});
+
+map.addEventListener('click', function (evt) {
+  var target = evt.target;
+  while (target !== map) {
+    if (target.className === 'map__pin') {
+      var data = target.getAttribute('data-number');
+
+      map.insertBefore(renderCard(data), mapFiltersContainer);
+      // var declarationCard = document.querySelector('.map__card');
+      // declarationCard.addEventListener('click', function () {
+      //   map.removeChild(declarationCard.previousSibling);
+      // })
+    }
+    target = target.parentNode;
+  }
+
+
+});
+var declarationCard = document.querySelector('.map__card');
