@@ -213,9 +213,8 @@ var cardCloseButton = declarationCard.querySelector('.popup__close');
 var changeDisabledAttr = function (elem) {
   if (elem.disabled) {
     elem.disabled = false;
-  } else if (!elem.disabled) {
+  } else
     elem.disabled = true;
-  }
 };
 
 var setDisabled = function () {
@@ -352,11 +351,13 @@ var onChangeGuests = function (evt) {
       capacity[0].disabled = true;
       capacity[1].disabled = true;
       capacity[2].disabled = false;
+      capacity[2].selected = true;
       capacity[3].disabled = true;
       break;
     case '2':
       capacity[0].disabled = true;
       capacity[1].disabled = false;
+      capacity[2].selected = true;
       capacity[2].disabled = false;
       capacity[3].disabled = true;
       break;
@@ -371,9 +372,9 @@ var onChangeGuests = function (evt) {
       capacity[1].disabled = true;
       capacity[2].disabled = true;
       capacity[3].disabled = false;
+      capacity[3].selected = true;
       break;
   }
 };
-
 
 rooms.addEventListener('change', onChangeGuests);
