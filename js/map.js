@@ -3,7 +3,7 @@
 var MAX_PICTURE_NUMBER = 8;
 var TITLES = ['"Большая уютная квартира"', '"Маленькая неуютная квартира"', '"Огромный прекрасный дворец"', '"Маленький ужасный дворец"', '"Красивый гостевой домик"', '"Некрасивый негостеприимный домик"', '"Уютное бунгало далеко от моря"', '"Неуютное бунгало по колено в воде"'];
 var MIN_PRICE = 1000;
-var MAX_PRICE = 10000;
+var MAX_PRICE = 1000000;
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var ROOMS = [1, 2, 3, 4, 5];
 var CHECK_TIMES = ['12:00', '13:00', '14:00'];
@@ -16,9 +16,19 @@ var MIN_Y = 150;
 var MAX_Y = 500;
 var MIN_GUESTS = 1;
 var MAX_GUESTS = 20;
+var PICTURE_WIDTH = 45;
+var PICTURE_HEIGHT = 40;
+var PICTURE_ALT = 'Фотография жилья';
 var DECLARATIONS_QUANTITY = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_ACTIVE_HEIGHT = 87;
+var MAIN_PIN_LEFT_COORD = 570;
+var MAIN_PIN_TOP_COORD = 375;
+var HALF_SIZE = 0.5;
+var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
@@ -99,15 +109,15 @@ for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
 }
 
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+
 var renderPins = function (index) {
   var pinElement = mapPinTemplate.cloneNode(true);
   pinElement.style = 'left: ' + (declarationsList[index].location.x - PIN_WIDTH / 2) + 'px; top: ' + (declarationsList[index].location.y - PIN_HEIGHT) + 'px;';
   pinElement.querySelector('img').alt = declarationsList[index].offer.title;
   pinElement.querySelector('img').src = declarationsList[index].author.avatar;
+  pinElement.setAttribute('data-number', [i]);
   return pinElement;
 };
 
@@ -115,9 +125,8 @@ var pinsFragment = document.createDocumentFragment();
 for (i = 0; i < DECLARATIONS_QUANTITY; i++) {
   pinsFragment.appendChild(renderPins(i));
 }
-mapPins.appendChild(pinsFragment);
 
-var mapFilters = document.querySelector('.map__filters-container');
+var mapFiltersContainer = document.querySelector('.map__filters-container');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
 var deleteInner = function (element) {
@@ -134,50 +143,237 @@ var createElementList = function (arr, tagName, classNameTemplate, className, pa
     newElement.classList.add(className, newComplexClass);
     parent.appendChild(newElement);
   }
-  return parent;
 };
 
-var renderCard = function (index) {
-  var cardElement = cardTemplate.cloneNode(true);
+var createImagesList = function (arr, tagName, className, parent) {
+  for (i = 0; i < arr.length; i++) {
+    var newElement = document.createElement(tagName);
+    newElement.classList.add(className);
+    newElement.src = arr[i];
+    newElement.setAttribute('width', PICTURE_WIDTH);
+    newElement.setAttribute('height', PICTURE_HEIGHT);
+    newElement.setAttribute('alt', PICTURE_ALT);
+    parent.appendChild(newElement);
+  }
+};
 
-  cardElement.querySelector('.popup__avatar').src = declarationsList[index].author.avatar;
-  cardElement.querySelector('.popup__title').textContent = declarationsList[index].offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = declarationsList[index].offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = declarationsList[index].offer.price + '₽/ночь';
+var cardElement = cardTemplate.cloneNode(true);
+var setCardData = function (elem, index) {
+  elem.querySelector('.popup__avatar').src = declarationsList[index].author.avatar;
+  elem.querySelector('.popup__title').textContent = declarationsList[index].offer.title;
+  elem.querySelector('.popup__text--address').textContent = declarationsList[index].offer.address;
+  elem.querySelector('.popup__text--price').textContent = declarationsList[index].offer.price + '₽/ночь';
   switch (declarationsList[index].offer.type) {
     case 'flat':
-      cardElement.querySelector('.popup__type').textContent = 'Квартира';
+      elem.querySelector('.popup__type').textContent = 'Квартира';
       break;
     case 'bungalo':
-      cardElement.querySelector('.popup__type').textContent = 'Бунгало';
+      elem.querySelector('.popup__type').textContent = 'Бунгало';
       break;
     case 'house':
-      cardElement.querySelector('.popup__type').textContent = 'Дом';
+      elem.querySelector('.popup__type').textContent = 'Дом';
       break;
     case 'palace':
-      cardElement.querySelector('.popup__type').textContent = 'Дворец';
+      elem.querySelector('.popup__type').textContent = 'Дворец';
       break;
   }
-  cardElement.querySelector('.popup__text--capacity').textContent = declarationsList[index].offer.rooms + ' комнаты для ' + declarationsList[index].offer.guests + ' гостей.';
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + declarationsList[index].offer.checkin + ', выезд до ' + declarationsList[index].offer.checkout;
+  elem.querySelector('.popup__text--capacity').textContent = declarationsList[index].offer.rooms + ' комнаты для ' + declarationsList[index].offer.guests + ' гостей.';
+  elem.querySelector('.popup__text--time').textContent = 'Заезд после ' + declarationsList[index].offer.checkin + ', выезд до ' + declarationsList[index].offer.checkout;
 
-  var featuresList = cardElement.querySelector('.popup__features');
+  var featuresList = elem.querySelector('.popup__features');
   deleteInner(featuresList);
   var featuresAvailable = declarationsList[index].offer.features;
   createElementList(featuresAvailable, 'li', 'popup__feature--', 'popup__feature', featuresList);
 
-  cardElement.querySelector('.popup__description').textContent = declarationsList[index].offer.description;
+  elem.querySelector('.popup__description').textContent = declarationsList[index].offer.description;
 
-  var cardPictures = cardElement.querySelector('.popup__photos');
-  var pictureTemplate = cardElement.querySelector('.popup__photo');
-  pictureTemplate.src = declarationsList[index].offer.photos[0];
-  declarationsList[index].offer.photos.splice(0, 1);
-  for (j = 0; j < declarationsList[index].offer.photos.length; j++) {
-    var pictureElement = pictureTemplate.cloneNode();
-    cardPictures.querySelector('.popup__photo').src = declarationsList[index].offer.photos[j];
-    cardPictures.appendChild(pictureElement);
+  var cardPictures = elem.querySelector('.popup__photos');
+  var userPictures = declarationsList[index].offer.photos;
+  deleteInner(cardPictures);
+  createImagesList(userPictures, 'img', 'popup__photo', cardPictures);
+
+  return elem;
+};
+map.insertBefore(cardElement, mapFiltersContainer);
+var declarationCard = map.querySelector('.map__card');
+declarationCard.classList.add('hidden');
+
+// ПОЛЬЗОВАТЕЛЬСКИЕ СОБЫТИЯ
+
+var mapFilter = mapFiltersContainer.querySelectorAll('.map__filter');
+var mapFeatures = mapFiltersContainer.querySelector('.map__features');
+var adForm = document.querySelector('.ad-form');
+var adFormHeader = adForm.querySelector('.ad-form-header');
+var adFormElement = adForm.querySelectorAll('.ad-form__element');
+var mainPin = map.querySelector('.map__pin--main');
+var addressField = adForm.querySelector('[name=address]');
+var cardCloseButton = declarationCard.querySelector('.popup__close');
+
+
+var changeDisabledAttr = function (elem) {
+  if (elem.disabled) {
+    elem.disabled = false;
+  } else if (!elem.disabled) {
+    elem.disabled = true;
   }
-  return cardElement;
 };
 
-map.insertBefore(renderCard(5), mapFilters);
+var setDisabled = function () {
+  Array.prototype.forEach.call(mapFilter, function (elem) {
+    changeDisabledAttr(elem);
+  });
+  changeDisabledAttr(mapFeatures);
+
+  Array.prototype.forEach.call(adFormElement, function (elem) {
+    changeDisabledAttr(elem);
+  });
+  changeDisabledAttr(adFormHeader);
+};
+setDisabled();
+
+var getMainPinStartCoord = function () {
+  var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(MAIN_PIN_TOP_COORD + MAIN_PIN_ACTIVE_HEIGHT * HALF_SIZE);
+  return mainPinCoordX + ', ' + mainPinCoordY;
+};
+addressField.value = getMainPinStartCoord();
+
+var onClickActivatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  setDisabled();
+  mapPins.appendChild(pinsFragment);
+  mainPin.removeEventListener('mouseup', onClickActivatePage);
+  mainPin.removeEventListener('keydown', onEnterActivatePage);
+};
+
+var onEnterActivatePage = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onClickActivatePage();
+  }
+};
+
+var onClickCardRender = function (evt) {
+  var target = evt.target;
+  while (target !== map) {
+    if (target.className === 'map__pin') {
+      declarationCard.classList.remove('hidden');
+      var data = target.getAttribute('data-number');
+      setCardData(declarationCard, data);
+    }
+    target = target.parentNode;
+  }
+  cardCloseButton.addEventListener('click', onClickCloseCard);
+  document.addEventListener('keydown', onEscClosePopup);
+};
+
+var onClickCloseCard = function () {
+  declarationCard.classList.add('hidden');
+  cardCloseButton.removeEventListener('click', onClickCloseCard);
+  document.removeEventListener('keydown', onEscClosePopup);
+};
+
+var onEscClosePopup = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    onClickCloseCard();
+  }
+};
+
+mainPin.addEventListener('mouseup', onClickActivatePage);
+mainPin.addEventListener('keydown', onEnterActivatePage);
+map.addEventListener('click', onClickCardRender);
+
+// ВАЛИДАЦИЯ ФОРМЫ – В ПРОЦЕССЕ
+
+var accomodationType = adForm.querySelector('select[name="type"]');
+var accomodationPrice = adForm.querySelector('#price');
+var checkIn = adForm.querySelector('select[name="timein"]');
+var checkOut = adForm.querySelector('select[name="timeout"]');
+var rooms = adForm.querySelector('select[name="rooms"]');
+var capacity = adForm.querySelector('select[name="capacity"]');
+
+var onTypeChangeSetPrice = function (evt) {
+  switch (evt.target.value) {
+    case 'flat':
+      accomodationPrice.setAttribute('min', '1000');
+      accomodationPrice.setAttribute('placeholder', '1000');
+      break;
+    case 'bungalo':
+      accomodationPrice.setAttribute('min', '0');
+      accomodationPrice.setAttribute('placeholder', '0');
+      break;
+    case 'house':
+      accomodationPrice.setAttribute('min', '5000');
+      accomodationPrice.setAttribute('placeholder', '5000');
+      break;
+    case 'palace':
+      accomodationPrice.setAttribute('min', '10000');
+      accomodationPrice.setAttribute('placeholder', '10000');
+      break;
+  }
+};
+
+accomodationType.addEventListener('change', onTypeChangeSetPrice);
+
+var onChangeCheckIn = function (evt) {
+  switch (evt.target.value) {
+    case '12:00':
+      checkOut.selectedIndex = 0;
+      break;
+    case '13:00':
+      checkOut.selectedIndex = 1;
+      break;
+    case '14:00':
+      checkOut.selectedIndex = 2;
+      break;
+  }
+};
+
+var onChangeCheckOut = function (evt) {
+  switch (evt.target.value) {
+    case '12:00':
+      checkIn.selectedIndex = 0;
+      break;
+    case '13:00':
+      checkIn.selectedIndex = 1;
+      break;
+    case '14:00':
+      checkIn.selectedIndex = 2;
+      break;
+  }
+};
+
+checkIn.addEventListener('change', onChangeCheckIn);
+checkOut.addEventListener('change', onChangeCheckOut);
+
+var onChangeGuests = function (evt) {
+  switch (evt.target.value) {
+    case '1':
+      capacity[0].disabled = true;
+      capacity[1].disabled = true;
+      capacity[2].disabled = false;
+      capacity[3].disabled = true;
+      break;
+    case '2':
+      capacity[0].disabled = true;
+      capacity[1].disabled = false;
+      capacity[2].disabled = false;
+      capacity[3].disabled = true;
+      break;
+    case '3':
+      capacity[0].disabled = false;
+      capacity[1].disabled = false;
+      capacity[2].disabled = false;
+      capacity[3].disabled = true;
+      break;
+    case '100':
+      capacity[0].disabled = true;
+      capacity[1].disabled = true;
+      capacity[2].disabled = true;
+      capacity[3].disabled = false;
+      break;
+  }
+};
+
+
+rooms.addEventListener('change', onChangeGuests);
