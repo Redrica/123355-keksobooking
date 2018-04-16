@@ -28,6 +28,7 @@ var MAIN_PIN_LEFT_COORD = 570;
 var MAIN_PIN_TOP_COORD = 375;
 var HALF_SIZE = 0.5;
 var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
@@ -108,7 +109,6 @@ for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
 }
 
 var map = document.querySelector('.map');
-
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
@@ -143,7 +143,6 @@ var createElementList = function (arr, tagName, classNameTemplate, className, pa
     newElement.classList.add(className, newComplexClass);
     parent.appendChild(newElement);
   }
-  return parent;
 };
 
 var createImagesList = function (arr, tagName, className, parent) {
@@ -156,11 +155,9 @@ var createImagesList = function (arr, tagName, className, parent) {
     newElement.setAttribute('alt', PICTURE_ALT);
     parent.appendChild(newElement);
   }
-  return parent;
 };
 
 var cardElement = cardTemplate.cloneNode(true);
-
 var setCardData = function (elem, index) {
   elem.querySelector('.popup__avatar').src = declarationsList[index].author.avatar;
   elem.querySelector('.popup__title').textContent = declarationsList[index].offer.title;
@@ -203,39 +200,29 @@ declarationCard.classList.add('hidden');
 
 // ПОЛЬЗОВАТЕЛЬСКИЕ СОБЫТИЯ
 
-// !!! в неактивном состоянии меню выбора невидимое, но доступно. Тоже disabled?
 var mapFilter = mapFiltersContainer.querySelectorAll('.map__filter');
 var mapFeatures = mapFiltersContainer.querySelector('.map__features');
 var adForm = document.querySelector('.ad-form');
-var adFormHeaderInput = document.querySelector('.ad-form-header__input');
+var adFormHeader = document.querySelector('.ad-form-header');
 var adFormElement = document.querySelectorAll('.ad-form__element');
-
-// фильтры почему-то активные, хоть и скрыты, поэтому добавляю disabled для неактивного сотояния
-Array.prototype.forEach.call(mapFilter, function (elem) {
-  elem.disabled = true;
-});
-mapFeatures.disabled = true;
-
-Array.prototype.forEach.call(adFormElement, function (elem) {
-  elem.disabled = true;
-});
-adFormHeaderInput.disabled = true;
-
 var mainPin = map.querySelector('.map__pin--main');
 var addressField = document.querySelector('[name=address]');
+var cardCloseButton = declarationCard.querySelector('.popup__close');
 
-var getMainPinStartCoord = function () {
-  var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
-  var mainPinCoordY = Math.round(MAIN_PIN_TOP_COORD + MAIN_PIN_ACTIVE_HEIGHT * HALF_SIZE);
-  return mainPinCoordX + ', ' + mainPinCoordY;
+var inactivatePage = function () {
+  Array.prototype.forEach.call(mapFilter, function (elem) {
+    elem.disabled = true;
+  });
+  mapFeatures.disabled = true;
+
+  Array.prototype.forEach.call(adFormElement, function (elem) {
+    elem.disabled = true;
+  });
+  adFormHeader.disabled = true;
 };
+inactivatePage();
 
-mainPin.addEventListener('mouseup', function () {
-  map.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-
-  mapPins.appendChild(pinsFragment);
-
+var setFieldsEnabled = function () {
   Array.prototype.forEach.call(mapFilter, function (elem) {
     elem.disabled = false;
   });
@@ -244,16 +231,31 @@ mainPin.addEventListener('mouseup', function () {
   Array.prototype.forEach.call(adFormElement, function (elem) {
     elem.disabled = false;
   });
-  adFormHeaderInput.disabled = false;
+  adFormHeader.disabled = false;
+};
 
+var getMainPinStartCoord = function () {
+  var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(MAIN_PIN_TOP_COORD + MAIN_PIN_ACTIVE_HEIGHT * HALF_SIZE);
+  return mainPinCoordX + ', ' + mainPinCoordY;
+};
+
+var onClickActivatePage = function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  setFieldsEnabled();
   addressField.value = getMainPinStartCoord();
-});
+  mapPins.appendChild(pinsFragment);
+  mainPin.removeEventListener('mouseup', onClickActivatePage);
+  mainPin.removeEventListener('keydown', onEnterActivatePage);
 
-mainPin.addEventListener('keydown', function (evt) {
+};
+
+var onEnterActivatePage = function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    map.classList.remove('map--faded');
+    onClickActivatePage();
   }
-});
+};
 
 var onClickCardRender = function (evt) {
   var target = evt.target;
@@ -265,12 +267,30 @@ var onClickCardRender = function (evt) {
     }
     target = target.parentNode;
   }
+  cardCloseButton.addEventListener('click', onClickCloseCard);
+  cardCloseButton.addEventListener('keydown', onEnterCloseCard);
+  document.addEventListener('keydown', onEscClosePopup);
 };
 
-map.addEventListener('click', onClickCardRender);
-
-var cardCloseButton = declarationCard.querySelector('.popup__close');
-cardCloseButton.addEventListener('click', function () {
+var onClickCloseCard = function () {
   declarationCard.classList.add('hidden');
-});
+  cardCloseButton.removeEventListener('click', onClickCloseCard);
+  cardCloseButton.removeEventListener('keydown', onEnterCloseCard);
+  document.removeEventListener('keydown', onEscClosePopup);
+};
 
+var onEnterCloseCard = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onClickCloseCard();
+  }
+};
+
+var onEscClosePopup = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    onClickCloseCard();
+  }
+};
+
+mainPin.addEventListener('mouseup', onClickActivatePage);
+mainPin.addEventListener('keydown', onEnterActivatePage);
+map.addEventListener('click', onClickCardRender);
