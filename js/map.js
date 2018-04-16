@@ -211,7 +211,11 @@ var cardCloseButton = declarationCard.querySelector('.popup__close');
 
 
 var changeDisabledAttr = function (elem) {
-  elem.disabled ? elem.disabled = false :  elem.disabled = true;
+  if (elem.disabled) {
+    elem.disabled = false;
+  } else if (!elem.disabled) {
+    elem.disabled = true;
+  }
 };
 
 var setDisabled = function () {
@@ -285,6 +289,8 @@ var accomodationType = adForm.querySelector('select[name="type"]');
 var accomodationPrice = adForm.querySelector('#price');
 var checkIn = adForm.querySelector('select[name="timein"]');
 var checkOut = adForm.querySelector('select[name="timeout"]');
+var rooms = adForm.querySelector('select[name="rooms"]');
+var capacity = adForm.querySelector('select[name="capacity"]');
 
 var onTypeChangeSetPrice = function (evt) {
   switch (evt.target.value) {
@@ -339,3 +345,34 @@ var onChangeCheckOut = function (evt) {
 
 checkIn.addEventListener('change', onChangeCheckIn);
 checkOut.addEventListener('change', onChangeCheckOut);
+
+var onChangeGuests = function (evt) {
+  switch (evt.target.value) {
+    case '1':
+      capacity[0].disabled = true;
+      capacity[1].disabled = true;
+      capacity[2].disabled = false;
+      capacity[3].disabled = true;
+      break;
+    case '2':
+      capacity[0].disabled = true;
+      capacity[1].disabled = false;
+      capacity[2].disabled = false;
+      capacity[3].disabled = true;
+      break;
+    case '3':
+      capacity[0].disabled = false;
+      capacity[1].disabled = false;
+      capacity[2].disabled = false;
+      capacity[3].disabled = true;
+      break;
+    case '100':
+      capacity[0].disabled = true;
+      capacity[1].disabled = true;
+      capacity[2].disabled = true;
+      capacity[3].disabled = false;
+      break;
+  }
+};
+
+rooms.addEventListener('change', onChangeGuests);
