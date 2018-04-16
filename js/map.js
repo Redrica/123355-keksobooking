@@ -203,52 +203,44 @@ declarationCard.classList.add('hidden');
 var mapFilter = mapFiltersContainer.querySelectorAll('.map__filter');
 var mapFeatures = mapFiltersContainer.querySelector('.map__features');
 var adForm = document.querySelector('.ad-form');
-var adFormHeader = document.querySelector('.ad-form-header');
-var adFormElement = document.querySelectorAll('.ad-form__element');
+var adFormHeader = adForm.querySelector('.ad-form-header');
+var adFormElement = adForm.querySelectorAll('.ad-form__element');
 var mainPin = map.querySelector('.map__pin--main');
-var addressField = document.querySelector('[name=address]');
+var addressField = adForm.querySelector('[name=address]');
 var cardCloseButton = declarationCard.querySelector('.popup__close');
 
-var inactivatePage = function () {
+
+var changeDisabledAttr = function (elem) {
+  elem.disabled ? elem.disabled = false :  elem.disabled = true;
+};
+
+var setDisabled = function () {
   Array.prototype.forEach.call(mapFilter, function (elem) {
-    elem.disabled = true;
+    changeDisabledAttr(elem);
   });
-  mapFeatures.disabled = true;
+  changeDisabledAttr(mapFeatures);
 
   Array.prototype.forEach.call(adFormElement, function (elem) {
-    elem.disabled = true;
+    changeDisabledAttr(elem);
   });
-  adFormHeader.disabled = true;
+  changeDisabledAttr(adFormHeader);
 };
-inactivatePage();
-
-var setFieldsEnabled = function () {
-  Array.prototype.forEach.call(mapFilter, function (elem) {
-    elem.disabled = false;
-  });
-  mapFeatures.disabled = false;
-
-  Array.prototype.forEach.call(adFormElement, function (elem) {
-    elem.disabled = false;
-  });
-  adFormHeader.disabled = false;
-};
+setDisabled();
 
 var getMainPinStartCoord = function () {
   var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
   var mainPinCoordY = Math.round(MAIN_PIN_TOP_COORD + MAIN_PIN_ACTIVE_HEIGHT * HALF_SIZE);
   return mainPinCoordX + ', ' + mainPinCoordY;
 };
+addressField.value = getMainPinStartCoord();
 
 var onClickActivatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
-  setFieldsEnabled();
-  addressField.value = getMainPinStartCoord();
+  setDisabled();
   mapPins.appendChild(pinsFragment);
   mainPin.removeEventListener('mouseup', onClickActivatePage);
   mainPin.removeEventListener('keydown', onEnterActivatePage);
-
 };
 
 var onEnterActivatePage = function (evt) {
@@ -268,21 +260,13 @@ var onClickCardRender = function (evt) {
     target = target.parentNode;
   }
   cardCloseButton.addEventListener('click', onClickCloseCard);
-  cardCloseButton.addEventListener('keydown', onEnterCloseCard);
   document.addEventListener('keydown', onEscClosePopup);
 };
 
 var onClickCloseCard = function () {
   declarationCard.classList.add('hidden');
   cardCloseButton.removeEventListener('click', onClickCloseCard);
-  cardCloseButton.removeEventListener('keydown', onEnterCloseCard);
   document.removeEventListener('keydown', onEscClosePopup);
-};
-
-var onEnterCloseCard = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    onClickCloseCard();
-  }
 };
 
 var onEscClosePopup = function (evt) {
@@ -294,3 +278,64 @@ var onEscClosePopup = function (evt) {
 mainPin.addEventListener('mouseup', onClickActivatePage);
 mainPin.addEventListener('keydown', onEnterActivatePage);
 map.addEventListener('click', onClickCardRender);
+
+// ВАЛИДАЦИЯ ФОРМЫ – В ПРОЦЕССЕ
+
+var accomodationType = adForm.querySelector('select[name="type"]');
+var accomodationPrice = adForm.querySelector('#price');
+var checkIn = adForm.querySelector('select[name="timein"]');
+var checkOut = adForm.querySelector('select[name="timeout"]');
+
+var onTypeChangeSetPrice = function (evt) {
+  switch (evt.target.value) {
+    case 'flat':
+      accomodationPrice.setAttribute('min', '1000');
+      accomodationPrice.setAttribute('placeholder', '1000');
+      break;
+    case 'bungalo':
+      accomodationPrice.setAttribute('min', '0');
+      accomodationPrice.setAttribute('placeholder', '0');
+      break;
+    case 'house':
+      accomodationPrice.setAttribute('min', '5000');
+      accomodationPrice.setAttribute('placeholder', '5000');
+      break;
+    case 'palace':
+      accomodationPrice.setAttribute('min', '10000');
+      accomodationPrice.setAttribute('placeholder', '10000');
+      break;
+  }
+};
+
+accomodationType.addEventListener('change', onTypeChangeSetPrice);
+
+var onChangeCheckIn = function (evt) {
+  switch (evt.target.value) {
+    case '12:00':
+      checkOut.selectedIndex = 0;
+      break;
+    case '13:00':
+      checkOut.selectedIndex = 1;
+      break;
+    case '14:00':
+      checkOut.selectedIndex = 2;
+      break;
+  }
+};
+
+var onChangeCheckOut = function (evt) {
+  switch (evt.target.value) {
+    case '12:00':
+      checkIn.selectedIndex = 0;
+      break;
+    case '13:00':
+      checkIn.selectedIndex = 1;
+      break;
+    case '14:00':
+      checkIn.selectedIndex = 2;
+      break;
+  }
+};
+
+checkIn.addEventListener('change', onChangeCheckIn);
+checkOut.addEventListener('change', onChangeCheckOut);
