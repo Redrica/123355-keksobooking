@@ -241,6 +241,7 @@ var onClickActivatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   setDisabled();
+  capacity.selectedIndex = 2;
   mapPins.appendChild(pinsFragment);
   mainPin.removeEventListener('mouseup', onClickActivatePage);
   mainPin.removeEventListener('keydown', onEnterActivatePage);
@@ -290,6 +291,8 @@ var checkIn = adForm.querySelector('select[name="timein"]');
 var checkOut = adForm.querySelector('select[name="timeout"]');
 var rooms = adForm.querySelector('select[name="rooms"]');
 var capacity = adForm.querySelector('select[name="capacity"]');
+var inputs = adForm.querySelectorAll('input');
+var submit = adForm.querySelector('.ad-form__submit');
 
 var onTypeChangeSetPrice = function (evt) {
   switch (evt.target.value) {
@@ -377,4 +380,79 @@ var onChangeGuests = function (evt) {
   }
 };
 
+var onChangeRooms = function (evt) {
+  switch (evt.target.value) {
+    case '3':
+      rooms[0].disabled = false;
+      rooms[1].disabled = false;
+      rooms[2].disabled = false;
+      rooms[3].disabled = true;
+      break;
+    case '2':
+      rooms[0].disabled = false;
+      rooms[1].disabled = false;
+      rooms[2].disabled = true;
+      rooms[3].disabled = true;
+      break;
+    case '1':
+      rooms[0].disabled = false;
+      rooms[1].disabled = true;
+      rooms[2].disabled = true;
+      rooms[3].disabled = true;
+      break;
+    case '0':
+      rooms[0].disabled = true;
+      rooms[1].disabled = true;
+      rooms[2].disabled = true;
+      rooms[3].disabled = false;
+      break;
+  }
+};
+
 rooms.addEventListener('change', onChangeGuests);
+capacity.addEventListener('change', onChangeRooms);
+
+var getAttributeValue = function (elem, attrName) {
+  return elem.getAttribute(attrName);
+};
+
+function CustomValidation() { }
+
+CustomValidation.prototype = {
+  invalidities: [],
+  checkValidity: function (input) {
+    var validity = input.validity;
+
+    if (validity.rangeUnderflow) {
+      var min = getAttributeValue(input, 'min');
+      this.addInvalidity('Опишите ваше жилье подробнее, чем в ' + (min - 1) + ' знаках.')
+    }
+    if (validity.rangeOverflow) {
+      var max = getAttributeValue(input, 'max');
+      this.addInvalidity('Не будьте так многословны, ' + max + ' знаков достаточно.')
+    }
+    if (validity.typeMismatch) {
+      this.addInvalidity('Циферками, пожалуйста, не словами!');
+    }
+  },
+  addInvalidity: function (message) {
+    this.invalidities.push(message);
+  },
+  getInvalidities: function () {
+    return this.invalidities.join('. \n');
+  }
+};
+
+submit.addEventListener('click', function (evt) {
+  for (var i = 0; i < inputs.length; i++) {
+    var input = inputs[i];
+    if (input.checkValidity() === false) {
+      var inputCustomValidation = new CustomValidation();
+      inputCustomValidation.checkValidity(input);
+      var customValidityMessage = inputCustomValidation.getInvalidities();
+      input.setCustomValidity(customValidityMessage);
+    }
+  }
+  evt.preventDefault();
+});
+
