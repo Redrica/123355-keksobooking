@@ -581,4 +581,11 @@ submit.addEventListener('click', function () {
   // evt.preventDefault();
 });
 
+for (i = 0; i < inputs.length; i++) {
+  var input = inputs[i];
+  input.addEventListener('input', function (evt) {
+    evt.target.style.backgroundColor = 'white';
+    evt.target.setCustomValidity('');
+  });
+}
 
