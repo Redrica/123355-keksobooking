@@ -31,6 +31,13 @@ var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
 var MIN_TITLE_LENGTH = 30;
 var MAX_TITLE_LENGTH = 100;
+var INVALID_FIELD_BORDER = '2px solid red';
+var VALID_FIELD_BORDER = '1px solid #d9d9d3';
+var INVALID_MESSAGE_STYLE = {position: 'absolute', marginTop: '3px', marginLeft: '12px', fontSize: '10px', fontStyle: 'italic', color: '#999999'};
+var BUNGALO_MIN_PRICE = 0;
+var FLAT_MIN_PRICE = 1000;
+var HOUSE_MIN_PRICE = 5000;
+var PALACE_MIN_PRICE = 10000;
 
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
@@ -244,9 +251,9 @@ var onClickActivatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   setDisabled();
-  accommodationPrice.setAttribute('min', '1000');
-  accommodationPrice.placeholder = 1000;
-  capacity.selectedIndex = 2;
+  // accommodationPrice.setAttribute('min', '1000');
+  // accommodationPrice.placeholder = 1000;
+  // capacity.selectedIndex = 2;
   mapPins.appendChild(pinsFragment);
   mainPin.removeEventListener('mouseup', onClickActivatePage);
   mainPin.removeEventListener('keydown', onEnterActivatePage);
@@ -297,32 +304,26 @@ var checkIn = adForm.querySelector('select[name="timein"]');
 var checkOut = adForm.querySelector('select[name="timeout"]');
 var rooms = adForm.querySelector('select[name="rooms"]');
 var capacity = adForm.querySelector('select[name="capacity"]');
-var inputs = adForm.elements;
-// var title = adForm.querySelector('[name=title]');
-var submit = adForm.querySelector('.ad-form__submit');
+// var submit = adForm.querySelector('.ad-form__submit');
 
-// var onTypeChangeSetPrice = function (evt) {
-//   switch (evt.target.value) {
-//     case 'flat':
-//       accommodationPrice.setAttribute('min', '1000');
-//       accommodationPrice.setAttribute('placeholder', '1000');
-//       break;
-//     case 'bungalo':
-//       accommodationPrice.setAttribute('min', '0');
-//       accommodationPrice.setAttribute('placeholder', '0');
-//       break;
-//     case 'house':
-//       accommodationPrice.setAttribute('min', '5000');
-//       accommodationPrice.setAttribute('placeholder', '5000');
-//       break;
-//     case 'palace':
-//       accommodationPrice.setAttribute('min', '10000');
-//       accommodationPrice.setAttribute('placeholder', '10000');
-//       break;
-//   }
-// };
+var onTypeChangeSetPrice = function (evt) {
+  switch (evt.target.value) {
+    case 'flat':
+      accommodationPrice.setAttribute('placeholder', '1000');
+      break;
+    case 'bungalo':
+      accommodationPrice.setAttribute('placeholder', '0');
+      break;
+    case 'house':
+      accommodationPrice.setAttribute('placeholder', '5000');
+      break;
+    case 'palace':
+      accommodationPrice.setAttribute('placeholder', '10000');
+      break;
+  }
+};
 
-// accommodationType.addEventListener('change', onTypeChangeSetPrice);
+accommodationType.addEventListener('change', onTypeChangeSetPrice);
 
 var onChangeCheckIn = function (evt) {
   switch (evt.target.value) {
@@ -425,157 +426,89 @@ var onChangeGuests = function (evt) {
 rooms.addEventListener('change', onChangeRooms);
 capacity.addEventListener('change', onChangeGuests);
 
-
-// var checkTitleField = function () {
-//   if (title.value.length < MIN_TITLE_LENGTH || title.value.length > MAX_TITLE_LENGTH) {
-//     return true;
-//   }
-// };
-
 var checkTitleField = function () {
-  return (title.value.length < MIN_TITLE_LENGTH || title.value.length > MAX_TITLE_LENGTH) ? true : false;
+  return (title.value.length < MIN_TITLE_LENGTH || title.value.length > MAX_TITLE_LENGTH);
 };
 
 var checkAddressField = function () {
-   return (addressField.value === getMainPinStartCoord()) ? true : false;
+  return (addressField.value === getMainPinStartCoord());
 };
 
 var checkPrice = function () {
   var room = accommodationType.value;
   switch (room) {
     case 'flat':
-      return accommodationPrice.value < 1000 ? true : false;
-      break;
+      return accommodationPrice.value < FLAT_MIN_PRICE;
     case 'bundalo':
-      return accommodationPrice.value >= 0 ? false : true;
-      break;
+      return accommodationPrice.value >= BUNGALO_MIN_PRICE;
     case 'house':
-      return accommodationPrice.value < 5000 ? true : false;
-      break;
+      return accommodationPrice.value < HOUSE_MIN_PRICE;
     case 'palace':
-      return accommodationPrice.value < 10000 ? true : false;
-      break;
+      return accommodationPrice.value < PALACE_MIN_PRICE;
   }
+  return room;
+};
+
+var addInvalidCondition = function (elem, text) {
+  if (elem.nextSibling) {
+    elem.parentNode.removeChild(elem.nextSibling);
+  }
+  elem.style.border = INVALID_FIELD_BORDER;
+  elem.placeholder = '';
+  var error = document.createElement('p');
+  error.textContent = text;
+  error.style.position = INVALID_MESSAGE_STYLE.position;
+  error.style.marginTop = INVALID_MESSAGE_STYLE.marginTop;
+  error.style.marginLeft = INVALID_MESSAGE_STYLE.marginLeft;
+  error.style.fontSize = INVALID_MESSAGE_STYLE.fontSize;
+  error.style.fontStyle = INVALID_MESSAGE_STYLE.fontStyle;
+  error.style.color = INVALID_MESSAGE_STYLE.color;
+  elem.parentNode.appendChild(error);
+  return error;
+};
+
+var titleInvalidMessage = 'Введенное значение должно быть от ' + MIN_TITLE_LENGTH + ' до ' + MAX_TITLE_LENGTH + ' символов.';
+var addressInvalidMessage = 'Не изменяйте это значение, оно вводится программой.';
+
+var getPriceInvalidText = function (elem) {
+  var itemText = elem.item(elem.selectedIndex).textContent;
+  return 'Слишком мало для ' + itemText;
 };
 
 adForm.addEventListener('submit', function (evt) {
   if (checkTitleField()) {
-    title.style.border = '2px solid red';
+    var errorTitleCondition = addInvalidCondition(title, titleInvalidMessage);
+
+    title.addEventListener('input', function () {
+      title.style.border = VALID_FIELD_BORDER;
+      var symbol = title.value.length;
+      errorTitleCondition.textContent = ('Вы ввели ' + symbol + ' символов. Осталоcь еще ' + (MIN_TITLE_LENGTH - symbol));
+      if (!checkTitleField()) {
+        errorTitleCondition.textContent = '';
+      }
+    });
     evt.preventDefault();
   }
   if (!checkAddressField()) {
-    addressField.style.border = '2px solid red';
+    var errorAddressCondition = addInvalidCondition(addressField, addressInvalidMessage);
     evt.preventDefault();
+
+    addressField.addEventListener('input', function () {
+      addressField.style.border = VALID_FIELD_BORDER;
+      if (checkAddressField()) {
+        errorAddressCondition.textContent = '';
+      }
+    })
   }
   if (checkPrice()) {
-    accommodationPrice.style.border = '2px solid red';
+    var errorPriceCondition = addInvalidCondition(accommodationPrice, getPriceInvalidText(accommodationType));
     evt.preventDefault();
+
+    accommodationPrice.addEventListener('input', function () {
+      accommodationPrice.style.border = VALID_FIELD_BORDER;
+      if (checkPrice()) {
+        errorPriceCondition.textContent = '';
+      }
+    });
   }
 });
-
-// title.addEventListener('invalid', function (evt) {
-//   if (!title.validity.valid) {
-//     title.style.backgroundColor = 'rgba(255, 50, 0, 0.3)';
-//     if (title.validity.tooShort) {
-//       title.setCustomValidity('Нужно минимум 30 знаков!');
-//     } else if (title.validity.tooLong) {
-//       title.setCustomValidity('Нужно максимум 100 знаков!');
-//     } else if (title.validity.valueMissing) {
-//       title.setCustomValidity('Это поле не может быть пустым!');
-//     } else {
-//       accommodationPrice.style.backgroundColor = 'white';
-//       title.setCustomValidity('');
-//     }
-//   }
-// });
-
-title.addEventListener('input', function () {
-  title.style.border = '1px solid #d9d9d3';
-  // var messageLength = title.value.length;
-  // title.setCustomValidity('Длина текста ' + messageLength + ', нужно еще ' + (MIN_TITLE_LENGTH - messageLength) + ' символов.');
-});
-
-// accommodationPrice.addEventListener('invalid', function () {
-//   if (!accommodationPrice.validity.valid) {
-//     accommodationPrice.style.backgroundColor = 'rgba(255, 50, 0, 0.3)';
-//     if (accommodationPrice.validity.valueMissing) {
-//       accommodationPrice.setCustomValidity('Это поле не может быть пустым!');
-//     } else if (accommodationPrice.validity.typeMismatch) {
-//       accommodationPrice.setCustomValidity('Это должно быть число!');
-//     } else {
-//       accommodationPrice.style.backgroundColor = 'white';
-//       accommodationPrice.setCustomValidity('');
-//     }
-//   }
-// });
-
-// accommodationPrice.addEventListener('input', function () {
-//   accommodationPrice.style.backgroundColor = 'white';
-//   accommodationPrice.setCustomValidity('');
-// });
-
-// userNameInput.addEventListener('invalid', function (evt) {
-//   if (userNameInput.validity.tooShort) {
-//     userNameInput.setCustomValidity('Имя должно состоять минимум из 2-х символов');
-//   } else if (userNameInput.validity.tooLong) {
-//     userNameInput.setCustomValidity('Имя не должно превышать 25-ти символов');
-//   } else if (userNameInput.validity.valueMissing) {
-//     userNameInput.setCustomValidity('Обязательное поле');
-//   } else {
-//     userNameInput.setCustomValidity('');
-//   }
-// });
-
-// --------------не работает--------------------
-// var checkValidity = function (input) {
-//   var validity = input.validity;
-//   if (validity.valueMissing) {
-//     input.setCustomValidity('Так не пойдёт, это поле надо заполнить.')
-//   }
-//
-//   if (validity.tooShort) {
-//     var min = getAttributeValue(input, 'minlength');
-//     var exist = input.value.length;
-//     input.setCustomValidity(exist + ' знаков маловато будет. Надо минимум ' + min + '.')
-//   }
-//   if (validity.tooLong) {
-//     var max = getAttributeValue(input, 'maxlength');
-//     input.setCustomValidity('Не будьте так многословны, ' + max + ' знаков достаточно.')
-//   }
-//   if (validity.rangeUnderflow) {
-//     min = getAttributeValue(input, 'min');
-//     var sample = accommodationType.value;
-//     input.setCustomValidity('Слишком мало для такой роскоши как ' + sample + '. Это стоит как минимум ' + min + '.');
-//   }
-//   if (validity.typeMismatch) {
-//     input.setCustomValidity('Циферками, пожалуйста, не словами!');
-//   }
-//   else if (input.validity.valid) {
-//     input.setCustomValidity('');
-//   }
-// };
-//
-//
-// submit.addEventListener('click', function (evt) {
-//   for (var i = 0; i < inputs.length; i++) {
-//     var input = inputs[i];
-//     if (input.checkValidity() === false) {
-//       // input.style.borderColor = 'red';
-//       checkValidity(input);
-//     }
-//     else if (input.validity.valid) {
-//       input.setCustomValidity('');
-//     }
-//   }
-//   // evt.preventDefault();
-// });
-
-
-// for (i = 0; i < inputs.length; i++) {
-//   var input = inputs[i];
-//   input.addEventListener('input', function (evt) {
-//     evt.target.style.backgroundColor = 'white';
-//     evt.target.setCustomValidity('');
-//   });
-// }
-
