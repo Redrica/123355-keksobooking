@@ -210,11 +210,18 @@ var addressField = adForm.querySelector('[name=address]');
 var cardCloseButton = declarationCard.querySelector('.popup__close');
 
 
+// -----------УБРАТЬ--------------
+// map.classList.remove('map--faded');
+// adForm.classList.remove('ad-form--disabled');
+// -----------УБРАТЬ--------------
+
+
 var changeDisabledAttr = function (elem) {
   if (elem.disabled) {
     elem.disabled = false;
-  } else
+  } else {
     elem.disabled = true;
+  }
 };
 
 var setDisabled = function () {
@@ -241,6 +248,8 @@ var onClickActivatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   setDisabled();
+  accommodationPrice.setAttribute('min', '1000');
+  accommodationPrice.placeholder = 1000;
   capacity.selectedIndex = 2;
   mapPins.appendChild(pinsFragment);
   mainPin.removeEventListener('mouseup', onClickActivatePage);
@@ -285,37 +294,38 @@ map.addEventListener('click', onClickCardRender);
 
 // ВАЛИДАЦИЯ ФОРМЫ – В ПРОЦЕССЕ
 
-var accomodationType = adForm.querySelector('select[name="type"]');
-var accomodationPrice = adForm.querySelector('#price');
+var accommodationType = adForm.querySelector('select[name="type"]');
+var accommodationPrice = adForm.querySelector('#price');
 var checkIn = adForm.querySelector('select[name="timein"]');
 var checkOut = adForm.querySelector('select[name="timeout"]');
 var rooms = adForm.querySelector('select[name="rooms"]');
 var capacity = adForm.querySelector('select[name="capacity"]');
-var inputs = adForm.querySelectorAll('input');
+var inputs = adForm.elements;
+// var title = adForm.querySelector('[name=title]');
 var submit = adForm.querySelector('.ad-form__submit');
 
 var onTypeChangeSetPrice = function (evt) {
   switch (evt.target.value) {
     case 'flat':
-      accomodationPrice.setAttribute('min', '1000');
-      accomodationPrice.setAttribute('placeholder', '1000');
+      accommodationPrice.setAttribute('min', '1000');
+      accommodationPrice.setAttribute('placeholder', '1000');
       break;
     case 'bungalo':
-      accomodationPrice.setAttribute('min', '0');
-      accomodationPrice.setAttribute('placeholder', '0');
+      accommodationPrice.setAttribute('min', '0');
+      accommodationPrice.setAttribute('placeholder', '0');
       break;
     case 'house':
-      accomodationPrice.setAttribute('min', '5000');
-      accomodationPrice.setAttribute('placeholder', '5000');
+      accommodationPrice.setAttribute('min', '5000');
+      accommodationPrice.setAttribute('placeholder', '5000');
       break;
     case 'palace':
-      accomodationPrice.setAttribute('min', '10000');
-      accomodationPrice.setAttribute('placeholder', '10000');
+      accommodationPrice.setAttribute('min', '10000');
+      accommodationPrice.setAttribute('placeholder', '10000');
       break;
   }
 };
 
-accomodationType.addEventListener('change', onTypeChangeSetPrice);
+accommodationType.addEventListener('change', onTypeChangeSetPrice);
 
 var onChangeCheckIn = function (evt) {
   switch (evt.target.value) {
@@ -348,7 +358,8 @@ var onChangeCheckOut = function (evt) {
 checkIn.addEventListener('change', onChangeCheckIn);
 checkOut.addEventListener('change', onChangeCheckOut);
 
-var onChangeGuests = function (evt) {
+// изменение количества комнат
+var onChangeRooms = function (evt) {
   switch (evt.target.value) {
     case '1':
       capacity[0].disabled = true;
@@ -380,42 +391,145 @@ var onChangeGuests = function (evt) {
   }
 };
 
-var onChangeRooms = function (evt) {
+// изменение количества гостей
+var onChangeGuests = function (evt) {
   switch (evt.target.value) {
     case '3':
-      rooms[0].disabled = false;
-      rooms[1].disabled = false;
+      rooms[0].disabled = true;
+      rooms[1].disabled = true;
       rooms[2].disabled = false;
       rooms[3].disabled = true;
+      rooms[2].selected = true;
       break;
     case '2':
       rooms[0].disabled = false;
       rooms[1].disabled = false;
       rooms[2].disabled = true;
       rooms[3].disabled = true;
+      rooms[1].selected = true;
       break;
     case '1':
       rooms[0].disabled = false;
       rooms[1].disabled = true;
       rooms[2].disabled = true;
       rooms[3].disabled = true;
+      rooms[0].selected = true;
       break;
     case '0':
       rooms[0].disabled = true;
       rooms[1].disabled = true;
       rooms[2].disabled = true;
       rooms[3].disabled = false;
+      rooms[3].selected = true;
       break;
   }
 };
 
-rooms.addEventListener('change', onChangeGuests);
-capacity.addEventListener('change', onChangeRooms);
+rooms.addEventListener('change', onChangeRooms);
+capacity.addEventListener('change', onChangeGuests);
 
 var getAttributeValue = function (elem, attrName) {
   return elem.getAttribute(attrName);
 };
 
+// title.addEventListener('invalid', function (evt) {
+//   if (!title.validity.valid) {
+//     title.style.backgroundColor = 'rgba(255, 50, 0, 0.3)';
+//     if (title.validity.tooShort) {
+//       title.setCustomValidity('Нужно минимум 30 знаков!');
+//     } else if (title.validity.tooLong) {
+//       title.setCustomValidity('Нужно максимум 100 знаков!');
+//     } else if (title.validity.valueMissing) {
+//       title.setCustomValidity('Это поле не может быть пустым!');
+//     } else {
+//       accommodationPrice.style.backgroundColor = 'white';
+//       title.setCustomValidity('');
+//     }
+//   }
+// });
+
+// title.addEventListener('input', function () {
+//   title.style.backgroundColor = 'white';
+//   title.setCustomValidity('');
+// });
+
+// accommodationPrice.addEventListener('invalid', function () {
+//   if (!accommodationPrice.validity.valid) {
+//     accommodationPrice.style.backgroundColor = 'rgba(255, 50, 0, 0.3)';
+//     if (accommodationPrice.validity.valueMissing) {
+//       accommodationPrice.setCustomValidity('Это поле не может быть пустым!');
+//     } else if (accommodationPrice.validity.typeMismatch) {
+//       accommodationPrice.setCustomValidity('Это должно быть число!');
+//     } else {
+//       accommodationPrice.style.backgroundColor = 'white';
+//       accommodationPrice.setCustomValidity('');
+//     }
+//   }
+// });
+
+// accommodationPrice.addEventListener('input', function () {
+//   accommodationPrice.style.backgroundColor = 'white';
+//   accommodationPrice.setCustomValidity('');
+// });
+
+// userNameInput.addEventListener('invalid', function (evt) {
+//   if (userNameInput.validity.tooShort) {
+//     userNameInput.setCustomValidity('Имя должно состоять минимум из 2-х символов');
+//   } else if (userNameInput.validity.tooLong) {
+//     userNameInput.setCustomValidity('Имя не должно превышать 25-ти символов');
+//   } else if (userNameInput.validity.valueMissing) {
+//     userNameInput.setCustomValidity('Обязательное поле');
+//   } else {
+//     userNameInput.setCustomValidity('');
+//   }
+// });
+
+// --------------не работает--------------------
+// var checkValidity = function (input) {
+//   var validity = input.validity;
+//   if (validity.valueMissing) {
+//     input.setCustomValidity('Так не пойдёт, это поле надо заполнить.')
+//   }
+//
+//   if (validity.tooShort) {
+//     var min = getAttributeValue(input, 'minlength');
+//     var exist = input.value.length;
+//     input.setCustomValidity(exist + ' знаков маловато будет. Надо минимум ' + min + '.')
+//   }
+//   if (validity.tooLong) {
+//     var max = getAttributeValue(input, 'maxlength');
+//     input.setCustomValidity('Не будьте так многословны, ' + max + ' знаков достаточно.')
+//   }
+//   if (validity.rangeUnderflow) {
+//     min = getAttributeValue(input, 'min');
+//     var sample = accommodationType.value;
+//     input.setCustomValidity('Слишком мало для такой роскоши как ' + sample + '. Это стоит как минимум ' + min + '.');
+//   }
+//   if (validity.typeMismatch) {
+//     input.setCustomValidity('Циферками, пожалуйста, не словами!');
+//   }
+//   else if (input.validity.valid) {
+//     input.setCustomValidity('');
+//   }
+// };
+//
+//
+// submit.addEventListener('click', function (evt) {
+//   for (var i = 0; i < inputs.length; i++) {
+//     var input = inputs[i];
+//     if (input.checkValidity() === false) {
+//       // input.style.borderColor = 'red';
+//       checkValidity(input);
+//     }
+//     else if (input.validity.valid) {
+//       input.setCustomValidity('');
+//     }
+//   }
+//   // evt.preventDefault();
+// });
+
+
+// -----------------------РАБОТАЕТ---------------------------------
 function CustomValidation() { }
 
 CustomValidation.prototype = {
@@ -423,13 +537,23 @@ CustomValidation.prototype = {
   checkValidity: function (input) {
     var validity = input.validity;
 
-    if (validity.rangeUnderflow) {
-      var min = getAttributeValue(input, 'min');
-      this.addInvalidity('Опишите ваше жилье подробнее, чем в ' + (min - 1) + ' знаках.')
+    if (validity.valueMissing) {
+      this.addInvalidity('Здесь надо что-то написать.');
     }
-    if (validity.rangeOverflow) {
-      var max = getAttributeValue(input, 'max');
-      this.addInvalidity('Не будьте так многословны, ' + max + ' знаков достаточно.')
+
+    if (validity.tooShort) {
+      var min = getAttributeValue(input, 'minlength');
+      var exist = input.value.length;
+      this.addInvalidity(exist + ' знаков маловато будет. Надо минимум ' + min + '.');
+    }
+    if (validity.tooLong) {
+      var max = getAttributeValue(input, 'maxlength');
+      this.addInvalidity('Не будьте так многословны, ' + max + ' знаков достаточно.');
+    }
+    if (validity.rangeUnderflow) {
+      min = getAttributeValue(input, 'min');
+      var sample = accommodationType.value;
+      this.addInvalidity('Слишком мало для такой роскоши как ' + sample + '. Это стоит как минимум ' + min + '.');
     }
     if (validity.typeMismatch) {
       this.addInvalidity('Циферками, пожалуйста, не словами!');
@@ -443,16 +567,18 @@ CustomValidation.prototype = {
   }
 };
 
-submit.addEventListener('click', function (evt) {
-  for (var i = 0; i < inputs.length; i++) {
+submit.addEventListener('click', function () {
+  for (i = 0; i < inputs.length; i++) {
     var input = inputs[i];
     if (input.checkValidity() === false) {
+      input.style.backgroundColor = 'rgba(255, 50, 0, 0.3)';
       var inputCustomValidation = new CustomValidation();
       inputCustomValidation.checkValidity(input);
       var customValidityMessage = inputCustomValidation.getInvalidities();
       input.setCustomValidity(customValidityMessage);
     }
   }
-  evt.preventDefault();
+  // evt.preventDefault();
 });
+
 
