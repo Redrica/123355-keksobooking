@@ -39,6 +39,7 @@ var FLAT_MIN_PRICE = 1000;
 var HOUSE_MIN_PRICE = 5000;
 var PALACE_MIN_PRICE = 10000;
 
+
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
 };
@@ -251,9 +252,8 @@ var onClickActivatePage = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   setDisabled();
-  // accommodationPrice.setAttribute('min', '1000');
-  // accommodationPrice.placeholder = 1000;
-  // capacity.selectedIndex = 2;
+  accommodationPrice.placeholder = 1000;
+  capacity.selectedIndex = 2;
   mapPins.appendChild(pinsFragment);
   mainPin.removeEventListener('mouseup', onClickActivatePage);
   mainPin.removeEventListener('keydown', onEnterActivatePage);
@@ -302,8 +302,8 @@ var accommodationType = adForm.querySelector('select[name="type"]');
 var accommodationPrice = adForm.querySelector('#price');
 var checkIn = adForm.querySelector('select[name="timein"]');
 var checkOut = adForm.querySelector('select[name="timeout"]');
-var rooms = adForm.querySelector('select[name="rooms"]');
-var capacity = adForm.querySelector('select[name="capacity"]');
+// var rooms = adForm.querySelector('select[name="rooms"]');
+// var capacity = adForm.querySelector('select[name="capacity"]');
 // var submit = adForm.querySelector('.ad-form__submit');
 
 var onTypeChangeSetPrice = function (evt) {
@@ -322,109 +322,149 @@ var onTypeChangeSetPrice = function (evt) {
       break;
   }
 };
-
 accommodationType.addEventListener('change', onTypeChangeSetPrice);
 
-var onChangeCheckIn = function (evt) {
+var onChangeSwitchTimes = function (evt) {
   switch (evt.target.value) {
     case '12:00':
-      checkOut.selectedIndex = 0;
+      if (evt.target === checkIn) {
+        checkOut.selectedIndex = 0;
+      } else if (evt.target === checkOut) {
+        checkIn.selectedIndex = 0;
+      }
       break;
     case '13:00':
-      checkOut.selectedIndex = 1;
+      if (evt.target === checkIn) {
+        checkOut.selectedIndex = 1;
+      } else if (evt.target === checkOut) {
+        checkIn.selectedIndex = 1;
+      }
       break;
     case '14:00':
-      checkOut.selectedIndex = 2;
+      if (evt.target === checkIn) {
+        checkOut.selectedIndex = 2;
+      } else if (evt.target === checkOut) {
+        checkIn.selectedIndex = 2;
+      }
       break;
   }
 };
+checkIn.addEventListener('change', onChangeSwitchTimes);
+checkOut.addEventListener('change', onChangeSwitchTimes);
 
-var onChangeCheckOut = function (evt) {
-  switch (evt.target.value) {
-    case '12:00':
-      checkIn.selectedIndex = 0;
-      break;
-    case '13:00':
-      checkIn.selectedIndex = 1;
-      break;
-    case '14:00':
-      checkIn.selectedIndex = 2;
-      break;
-  }
+// (function () {
+//   window.synchronizeFields = function (primaryElement, dependentElement, primaryElementValues, dependentElementValues, synchronizeElementValues) {
+//     primaryElement.addEventListener('change', function (evt) {
+//       primaryElementValues.forEach(function (primaryElementValue, i) {
+//         if (evt.target.value === primaryElementValue) {
+//           // запуск на исполнение callback функции
+//           synchronizeElementValues(dependentElement, dependentElementValues[i]);
+//         }
+//       });
+//     });
+//   };
+// })();
+
+var ROOM_NUMBERS = ['1', '2', '3', '100'];
+var CAPACITY = [['1'], ['2', '1'], ['3', '2', '1'], ['0']];
+var rooms = adForm.querySelector('select[name="rooms"]');
+var capacity = adForm.querySelector('select[name="capacity"]');
+
+(function () {
+  window.synchronizeFields = function (rooms, capacity, ROOM_NUMBER, CAPACITY) {
+  rooms.addEventListener('change', function (evt) {
+    ROOM_NUMBERS.forEach(function (roomsValue, i) {
+      if (evt.target.value === roomsValue) {
+        var guestsAvailable = CAPACITY[i];
+        for (j = 0; j < guestsAvailable.length; j++) {
+          capacity[j].disabled = true;
+        }
+      }
+    });
+  });
 };
+})();
+synchronizeFields();
 
-checkIn.addEventListener('change', onChangeCheckIn);
-checkOut.addEventListener('change', onChangeCheckOut);
+//
+// for (i = 0; i < ROOM_NUMBERS; i++) {
+//   var guestsAvailable = CAPACITY[i];
+//   for (j = 0; j < guestsAvailable.length; j++) {
+//     capacity[j].disabled = true;
+//   }
+// }
+
+// synchronizeFields(rooms, capacity, ROOM_NUMBER, CAPACITY, synchronizeElementValues)();
 
 // изменение количества комнат
-var onChangeRooms = function (evt) {
-  switch (evt.target.value) {
-    case '1':
-      capacity[0].disabled = true;
-      capacity[1].disabled = true;
-      capacity[2].disabled = false;
-      capacity[2].selected = true;
-      capacity[3].disabled = true;
-      break;
-    case '2':
-      capacity[0].disabled = true;
-      capacity[1].disabled = false;
-      capacity[2].selected = true;
-      capacity[2].disabled = false;
-      capacity[3].disabled = true;
-      break;
-    case '3':
-      capacity[0].disabled = false;
-      capacity[1].disabled = false;
-      capacity[2].disabled = false;
-      capacity[3].disabled = true;
-      break;
-    case '100':
-      capacity[0].disabled = true;
-      capacity[1].disabled = true;
-      capacity[2].disabled = true;
-      capacity[3].disabled = false;
-      capacity[3].selected = true;
-      break;
-  }
-};
+// var onChangeRooms = function (evt) {
+//   switch (evt.target.value) {
+//     case '1':
+//       capacity[0].disabled = true;
+//       capacity[1].disabled = true;
+//       capacity[2].disabled = false;
+//       capacity[2].selected = true;
+//       capacity[3].disabled = true;
+//       break;
+//     case '2':
+//       capacity[0].disabled = true;
+//       capacity[1].disabled = false;
+//       capacity[2].selected = true;
+//       capacity[2].disabled = false;
+//       capacity[3].disabled = true;
+//       break;
+//     case '3':
+//       capacity[0].disabled = false;
+//       capacity[1].disabled = false;
+//       capacity[2].disabled = false;
+//       capacity[3].disabled = true;
+//       break;
+//     case '100':
+//       capacity[0].disabled = true;
+//       capacity[1].disabled = true;
+//       capacity[2].disabled = true;
+//       capacity[3].disabled = false;
+//       capacity[3].selected = true;
+//       break;
+//   }
+// };
 
 // изменение количества гостей
-var onChangeGuests = function (evt) {
-  switch (evt.target.value) {
-    case '3':
-      rooms[0].disabled = true;
-      rooms[1].disabled = true;
-      rooms[2].disabled = false;
-      rooms[3].disabled = true;
-      rooms[2].selected = true;
-      break;
-    case '2':
-      rooms[0].disabled = false;
-      rooms[1].disabled = false;
-      rooms[2].disabled = true;
-      rooms[3].disabled = true;
-      rooms[1].selected = true;
-      break;
-    case '1':
-      rooms[0].disabled = false;
-      rooms[1].disabled = true;
-      rooms[2].disabled = true;
-      rooms[3].disabled = true;
-      rooms[0].selected = true;
-      break;
-    case '0':
-      rooms[0].disabled = true;
-      rooms[1].disabled = true;
-      rooms[2].disabled = true;
-      rooms[3].disabled = false;
-      rooms[3].selected = true;
-      break;
-  }
-};
+// var onChangeGuests = function (evt) {
+//   switch (evt.target.value) {
+//     case '3':
+//       rooms[0].disabled = true;
+//       rooms[1].disabled = true;
+//       rooms[2].disabled = false;
+//       rooms[3].disabled = true;
+//       rooms[2].selected = true;
+//       break;
+//     case '2':
+//       rooms[0].disabled = false;
+//       rooms[1].disabled = false;
+//       rooms[2].disabled = true;
+//       rooms[3].disabled = true;
+//       rooms[1].selected = true;
+//       break;
+//     case '1':
+//       rooms[0].disabled = false;
+//       rooms[1].disabled = true;
+//       rooms[2].disabled = true;
+//       rooms[3].disabled = true;
+//       rooms[0].selected = true;
+//       break;
+//     case '0':
+//       rooms[0].disabled = true;
+//       rooms[1].disabled = true;
+//       rooms[2].disabled = true;
+//       rooms[3].disabled = false;
+//       rooms[3].selected = true;
+//       break;
+//   }
+// };
 
-rooms.addEventListener('change', onChangeRooms);
-capacity.addEventListener('change', onChangeGuests);
+// rooms.addEventListener('change', onChangeRooms);
+// capacity.addEventListener('change', onChangeGuests);
 
 var checkTitleField = function () {
   return (title.value.length < MIN_TITLE_LENGTH || title.value.length > MAX_TITLE_LENGTH);
@@ -485,6 +525,8 @@ adForm.addEventListener('submit', function (evt) {
       errorTitleCondition.textContent = ('Вы ввели ' + symbol + ' символов. Осталоcь еще ' + (MIN_TITLE_LENGTH - symbol));
       if (!checkTitleField()) {
         errorTitleCondition.textContent = '';
+      } else if (title.value.length > MAX_TITLE_LENGTH) {
+        errorTitleCondition.textContent = 'Пожалуйста, не больше ' + MAX_TITLE_LENGTH + ' символов.';
       }
     });
     evt.preventDefault();
