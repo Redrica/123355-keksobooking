@@ -516,6 +516,7 @@ var onClickResetPage = function (evt) {
   mainPin.addEventListener('mouseup', onClickActivatePage);
   mainPin.addEventListener('keydown', onEnterActivatePage);
   removePins(mapPins);
+  removeErrors();
 };
 
 var removePins = function (element) {
@@ -523,6 +524,13 @@ var removePins = function (element) {
     element.removeChild(element.lastChild);
   }
   return element;
+};
+
+var removeErrors = function () {
+  var errorText = adForm.querySelectorAll('.error-text');
+  Array.prototype.forEach.call(errorText, function (item) {
+    item.parentNode.removeChild(item);
+  });
 };
 
 reset.addEventListener('click', onClickResetPage);
