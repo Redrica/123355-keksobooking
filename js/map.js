@@ -23,6 +23,7 @@ var DECLARATIONS_QUANTITY = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 65;
 var MAIN_PIN_ACTIVE_HEIGHT = 87;
 var MAIN_PIN_LEFT_COORD = 570;
 var MAIN_PIN_TOP_COORD = 375;
@@ -42,6 +43,7 @@ var CAPACITY_INVALID_MESSAGE = 'Количество гостей не соот�
 var ROOM_NUMBERS = ['1', '2', '3', '100'];
 var CAPACITY = [[2], [1, 2], [0, 1, 2], [3]];
 var CAPACITY_VALUES = ['3', '2', '1', '0'];
+var MOVE_LIMITS = {top: 65, right: 1135, bottom: 625, left: 0};
 
 var calculateRandomIndex = function (arr) {
   return Math.round(Math.random() * (arr.length - 1));
@@ -250,11 +252,17 @@ var setDisabled = function () {
 setDisabled();
 
 var getMainPinStartCoord = function () {
-  var mainPinCoordX = Math.round(MAIN_PIN_LEFT_COORD + MAIN_PIN_WIDTH * HALF_SIZE);
-  var mainPinCoordY = Math.round(MAIN_PIN_TOP_COORD + MAIN_PIN_ACTIVE_HEIGHT * HALF_SIZE);
+  var mainPinCoordX = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(mainPin.offsetTop + MAIN_PIN_HEIGHT * HALF_SIZE);
   return mainPinCoordX + ', ' + mainPinCoordY;
 };
 addressField.value = getMainPinStartCoord();
+
+var getMainPinActiveCoord = function () {
+  var mainPinCoordX = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
+  return mainPinCoordX + ', ' + mainPinCoordY;
+};
 
 var onClickActivatePage = function () {
   map.classList.remove('map--faded');
@@ -317,6 +325,7 @@ var rooms = adForm.querySelector('select[name="rooms"]');
 var capacity = adForm.querySelector('select[name="capacity"]');
 var reset = adForm.querySelector('.ad-form__reset');
 
+// ПРОВЕРИТЬ, ЧТО НЕ ТАК С ПЛЕЙСХОЛДЕРОМ О_о
 var onTypeChangeSetPrice = function (evt) {
   switch (evt.target.value) {
     case 'flat':
@@ -534,3 +543,47 @@ var removeErrors = function () {
 };
 
 reset.addEventListener('click', onClickResetPage);
+
+
+// ПЕРЕТАСКИВАНИЕ
+var startCoords = {};
+var getStartCoords = function (evt) {
+  startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  return startCoords;
+};
+
+var getObjectCoords = function (element, objectShift) {
+  element.style.top = (element.offsetTop - objectShift.y) + 'px';
+  element.style.left = (element.offsetLeft - objectShift.x) + 'px';
+};
+
+var onMouseMove = function (moveEvt) {
+  moveEvt.preventDefault();
+  var shift = {
+    x: startCoords.x - moveEvt.clientX,
+    y: startCoords.y - moveEvt.clientY
+  };
+  getStartCoords(moveEvt);
+
+  getObjectCoords(mainPin, shift);
+  addressField.value = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE) + ', ' + (mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
+};
+
+var onMouseUp = function (upEvt) {
+  upEvt.preventDefault();
+  addressField.value = getMainPinActiveCoord();
+
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+};
+
+var onMouseDownDragPin = function (evt) {
+  evt.preventDefault();
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+};
+
+mainPin.addEventListener('mousedown', onMouseDownDragPin);
