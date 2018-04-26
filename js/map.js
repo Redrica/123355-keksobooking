@@ -594,7 +594,7 @@ mainPin.addEventListener('mousedown', function (evt) {
     setLimitsTop(coordTop, MOVE_LIMITS.top, MOVE_LIMITS.bottom, mainPin);
     setLimitsLeft(coordLeft, MOVE_LIMITS.left, MOVE_LIMITS.right, mainPin);
 
-    addressField.value = Math.round(mainPin.offsetTop + MAIN_PIN_WIDTH * HALF_SIZE) + ', ' + (mainPin.offsetLeft + MAIN_PIN_ACTIVE_HEIGHT);
+    addressField.value = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE) + ', ' + (mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
   };
 
   var onMouseUp = function (upEvt) {
