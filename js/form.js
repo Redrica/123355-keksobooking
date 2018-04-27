@@ -13,18 +13,17 @@
   var CAPACITY_INVALID_MESSAGE = 'Количество гостей не соответствует выбранному количеству комнат';
   var ROOM_NUMBERS = ['1', '2', '3', '100'];
   var CAPACITY_VALUES = ['3', '2', '1', '0'];
+  var inputs = window.map.adForm.elements;
+  var title = window.map.adForm.querySelector('[name=title]');
+  var accommodationType = window.map.adForm.querySelector('select[name="type"]');
+  var accommodationPrice = window.map.adForm.querySelector('#price');
+  var checkIn = window.map.adForm.querySelector('select[name="timein"]');
+  var checkOut = window.map.adForm.querySelector('select[name="timeout"]');
+  var rooms = window.map.adForm.querySelector('select[name="rooms"]');
+  var capacity = window.map.adForm.querySelector('select[name="capacity"]');
+  var reset = window.map.adForm.querySelector('.ad-form__reset');
 
-  var inputs = adForm.elements;
-  var title = adForm.querySelector('[name=title]');
-  var accommodationType = adForm.querySelector('select[name="type"]');
-  var accommodationPrice = adForm.querySelector('#price');
-  var checkIn = adForm.querySelector('select[name="timein"]');
-  var checkOut = adForm.querySelector('select[name="timeout"]');
-  var rooms = adForm.querySelector('select[name="rooms"]');
-  var capacity = adForm.querySelector('select[name="capacity"]');
-  var reset = adForm.querySelector('.ad-form__reset');
-
-// ПРОВЕРИТЬ, ЧТО НЕ ТАК С ПЛЕЙСХОЛДЕРОМ О_о
+  // ПРОВЕРИТЬ, ЧТО НЕ ТАК С ПЛЕЙСХОЛДЕРОМ О_о
   var onTypeChangeSetPrice = function (evt) {
     switch (evt.target.value) {
       case 'flat':
@@ -47,23 +46,12 @@
   };
   accommodationType.addEventListener('change', onTypeChangeSetPrice);
 
-
-  var disableFields = function (indexArray, dependentList) {
-    Array.prototype.forEach.call(dependentList.options, function (option) {
-      option.disabled = true;
-    });
-    indexArray.forEach(function (number) {
-      dependentList.options[number].disabled = false;
-    });
-  };
-
-
   var checkTitleField = function () {
     return (!title.validity.valid || title.value.length < MIN_TITLE_LENGTH || title.value.length > MAX_TITLE_LENGTH);
   };
 
   var checkAddressField = function () {
-    return (addressField.value === getMainPinStartCoord());
+    return (window.map.addressField.value === window.map.getMainPinActiveCoord());
   };
 
   var checkPriceField = function () {
@@ -136,7 +124,7 @@
   title.addEventListener('invalid', onInputInvalid);
   accommodationPrice.addEventListener('invalid', onInputInvalid);
 
-  adForm.addEventListener('submit', function (evt) {
+  window.map.adForm.addEventListener('submit', function (evt) {
     if (checkTitleField()) {
       var errorTitleCondition = addInvalidCondition(title, titleInvalidMessage);
 
@@ -153,11 +141,11 @@
       evt.preventDefault();
     }
     if (!checkAddressField()) {
-      var errorAddressCondition = addInvalidCondition(addressField, ADDRESS_INVALID_MESSAGE);
+      var errorAddressCondition = addInvalidCondition(window.map.addressField, ADDRESS_INVALID_MESSAGE);
       evt.preventDefault();
 
-      addressField.addEventListener('input', function () {
-        addressField.classList.remove('invalid-field');
+      window.map.addressField.addEventListener('input', function () {
+        window.map.addressField.classList.remove('invalid-field');
         if (checkAddressField()) {
           errorAddressCondition.textContent = '';
         }
@@ -189,40 +177,40 @@
   var onClickResetPage = function (evt) {
     evt.preventDefault();
     title.value = '';
-    addressField.value = getMainPinStartCoord();
+    window.map.addressField.value = window.map.getMainPinStartCoord();
     accommodationType.selectedIndex = '0';
     accommodationPrice.value = '';
     checkIn.selectedIndex = '0';
     checkOut.selectedIndex = '0';
     rooms.selectedIndex = '0';
     capacity.selectedIndex = '2';
-    Array.prototype.forEach.call(featureCheckbox, function (item) {
+    Array.prototype.forEach.call(window.map.featureCheckbox, function (item) {
       item.checked = false;
     });
     window.card.declarationCard.classList.add('hidden');
-    mainPin.style.left = MAIN_PIN_LEFT_COORD + 'px';
-    mainPin.style.top = MAIN_PIN_TOP_COORD + 'px';
-    setDisabled();
-    map.classList.add('map--faded');
-    adForm.classList.add('ad-form--disabled');
+    window.util.mainPin.style.left = window.map.MAIN_PIN_LEFT_COORD + 'px';
+    window.util.mainPin.style.top = window.map.MAIN_PIN_TOP_COORD + 'px';
+    window.map.setDisabled();
+    window.util.map.classList.add('map--faded');
+    window.map.adForm.classList.add('ad-form--disabled');
     Array.prototype.forEach.call(inputs, function (item) {
       item.classList.remove('invalid-field');
     });
-    mainPin.addEventListener('mouseup', onClickActivatePage);
-    mainPin.addEventListener('keydown', onEnterActivatePage);
-    removePins(mapPins);
+    window.util.mainPin.addEventListener('mouseup', window.map.onClickActivatePage);
+    window.util.mainPin.addEventListener('keydown', window.map.onEnterActivatePage);
+    removePins(window.pins.mapPins);
     removeErrors();
   };
 
   var removePins = function (element) {
-    while (element.lastChild !== mainPin) {
+    while (element.lastChild !== window.util.mainPin) {
       element.removeChild(element.lastChild);
     }
     return element;
   };
 
   var removeErrors = function () {
-    var errorText = adForm.querySelectorAll('.error-text');
+    var errorText = window.map.adForm.querySelectorAll('.error-text');
     Array.prototype.forEach.call(errorText, function (item) {
       item.parentNode.removeChild(item);
     });
@@ -230,32 +218,13 @@
 
   reset.addEventListener('click', onClickResetPage);
 
-  var synchronizeFields = function (primaryList, dependentList, primaryValuesArray, dependentIndexArray) {
-    primaryList.addEventListener('change', function (evt) {
-      var value = evt.target.value;
-      var arrIndex = primaryValuesArray.indexOf(value);
-      disableFields(dependentIndexArray[arrIndex], dependentList);
-    });
-  };
-
-  var synchronizeTimesFields = function (primaryFields, dependantFields) {
-    primaryFields.addEventListener('change', function (evt) {
-      var targetField = evt.target;
-      dependantFields.value = targetField.value;
-    });
-  };
-
   window.form = {
     CAPACITY: [[2], [1, 2], [0, 1, 2], [3]],
     ROOM_NUMBERS: ['1', '2', '3', '100'],
-
-    checkIn: adForm.querySelector('select[name="timein"]'),
-    checkOut: adForm.querySelector('select[name="timeout"]'),
-    capacity: adForm.querySelector('select[name="capacity"]'),
-    rooms: adForm.querySelector('select[name="rooms"]'),
-    accommodationPrice: adForm.querySelector('#price'),
-
-    synchronizeFields: synchronizeFields,
-    synchronizeTimesFields: synchronizeTimesFields
-  }
+    checkIn: checkIn,
+    checkOut: checkOut,
+    capacity: capacity,
+    rooms: rooms,
+    accommodationPrice: accommodationPrice
+  };
 })();

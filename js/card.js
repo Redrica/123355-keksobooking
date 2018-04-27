@@ -1,14 +1,10 @@
 'use strict';
 
 (function () {
+  var PICTURE_WIDTH = 45;
+  var PICTURE_HEIGHT = 40;
+  var PICTURE_ALT = 'Фотография жилья';
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
-
-  var deleteInner = function (element) {
-    while (element.firstChild) {
-      element.removeChild(element.firstChild);
-    }
-    return element;
-  };
 
   var createElementList = function (arr, tagName, classNameTemplate, className, parent) {
     for (var i = 0; i < arr.length; i++) {
@@ -55,7 +51,8 @@
     elem.querySelector('.popup__text--time').textContent = 'Заезд после ' + window.data.declarationsList[index].offer.checkin + ', выезд до ' + window.data.declarationsList[index].offer.checkout;
 
     var featuresList = elem.querySelector('.popup__features');
-    deleteInner(featuresList);
+    window.util.deleteInner(featuresList);
+
     var featuresAvailable = window.data.declarationsList[index].offer.features;
     createElementList(featuresAvailable, 'li', 'popup__feature--', 'popup__feature', featuresList);
 
@@ -63,7 +60,7 @@
 
     var cardPictures = elem.querySelector('.popup__photos');
     var userPictures = window.data.declarationsList[index].offer.photos;
-    deleteInner(cardPictures);
+    window.util.deleteInner(cardPictures);
     createImagesList(userPictures, 'img', 'popup__photo', cardPictures);
 
     return elem;
@@ -96,15 +93,12 @@
   };
 
   var onEscCloseCard = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
-      onClickCloseCard();
-    }
+    window.util.isEscEvent(evt, onClickCloseCard);
   };
-
 
   window.util.map.addEventListener('click', onClickCardRender);
 
   window.card = {
     declarationCard: declarationCard
-  }
+  };
 })();

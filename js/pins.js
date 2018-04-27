@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var PIN_WIDTH = 50;
+  var PIN_HEIGHT = 70;
   var mapPins = document.querySelector('.map__pins');
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
@@ -13,13 +15,16 @@
     return pinElement;
   };
 
-  window.pins = {
-    renderPins: function () {
-      var pinsFragment = document.createDocumentFragment();
-      for (var i = 0; i < DECLARATIONS_QUANTITY; i++) {
-        pinsFragment.appendChild(createPins(i));
-      }
-      mapPins.appendChild(pinsFragment);
+  var renderPins = function () {
+    var pinsFragment = document.createDocumentFragment();
+    for (var i = 0; i < window.data.DECLARATIONS_QUANTITY; i++) {
+      pinsFragment.appendChild(createPins(i));
     }
-  }
+    mapPins.appendChild(pinsFragment);
+  };
+
+  window.pins = {
+    mapPins: mapPins,
+    renderPins: renderPins
+  };
 })();

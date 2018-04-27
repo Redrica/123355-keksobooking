@@ -9,7 +9,6 @@
   var ROOMS = [1, 2, 3, 4, 5];
   var CHECK_TIMES = ['12:00', '13:00', '14:00'];
   var FEATURES_OPTIONS = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var MIN_ARRAY_LENGTH = 1;
   var PHOTOS_COLLECTION = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
   var MIN_X = 300;
   var MAX_X = 900;
@@ -17,44 +16,7 @@
   var MAX_Y = 500;
   var MIN_GUESTS = 1;
   var MAX_GUESTS = 20;
-
-
-  var calculateRandomIndex = function (arr) {
-    return Math.round(Math.random() * (arr.length - 1));
-  };
-
-  var getRandomNumber = function (min, max) {
-    return Math.round(Math.random() * (max - min)) + min;
-  };
-
-  var getRandomUniqueElement = function (arrToSplice) {
-    var indexRandom = calculateRandomIndex(arrToSplice);
-    var splicedElement = arrToSplice.splice(indexRandom, 1);
-    return splicedElement[0];
-  };
-
-  var getMixedArray = function (originalArray) {
-    var mixed = [];
-    var originalCopy = originalArray.slice();
-    for (var j = 0; j < originalArray.length; j++) {
-      var randomIndex = calculateRandomIndex(originalCopy);
-      mixed[j] = originalCopy[randomIndex];
-      originalCopy.splice(randomIndex, 1);
-    }
-    return mixed;
-  };
-
-  var getRandomLengthArray = function (arr) {
-    var randomLengthArray = [];
-    var originalArray = arr.slice();
-    randomLengthArray.length = getRandomNumber(MIN_ARRAY_LENGTH, originalArray.length);
-    for (var j = 0; j < randomLengthArray.length; j++) {
-      var randomIndex = calculateRandomIndex(originalArray);
-      randomLengthArray[j] = originalArray[randomIndex];
-      originalArray.splice(randomIndex, 1);
-    }
-    return randomLengthArray;
-  };
+  var DECLARATIONS_QUANTITY = 8;
 
   var avatarsArray = [];
   for (var j = 0; j < MAX_PICTURE_NUMBER; j++) {
@@ -65,27 +27,27 @@
 
   var createRandomDeclaration = function () {
     var objectLocation = {
-      x: getRandomNumber(MIN_X, MAX_X),
-      y: getRandomNumber(MIN_Y, MAX_Y)
+      x: window.util.getRandomNumber(MIN_X, MAX_X),
+      y: window.util.getRandomNumber(MIN_Y, MAX_Y)
     };
 
     return {
       author: {
-        avatar: getRandomUniqueElement(avatarsArray)
+        avatar: window.util.getRandomUniqueElement(avatarsArray)
       },
 
       offer: {
-        title: getRandomUniqueElement(titlesArray),
+        title: window.util.getRandomUniqueElement(titlesArray),
         address: objectLocation.x + ', ' + objectLocation.y,
-        price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: TYPES[calculateRandomIndex(TYPES)],
-        rooms: ROOMS[calculateRandomIndex(ROOMS)],
-        guests: getRandomNumber(MIN_GUESTS, MAX_GUESTS),
-        checkin: CHECK_TIMES[calculateRandomIndex(CHECK_TIMES)],
-        checkout: CHECK_TIMES[calculateRandomIndex(CHECK_TIMES)],
-        features: getRandomLengthArray(FEATURES_OPTIONS),
+        price: window.util.getRandomNumber(MIN_PRICE, MAX_PRICE),
+        type: TYPES[window.util.calculateRandomIndex(TYPES)],
+        rooms: ROOMS[window.util.calculateRandomIndex(ROOMS)],
+        guests: window.util.getRandomNumber(MIN_GUESTS, MAX_GUESTS),
+        checkin: CHECK_TIMES[window.util.calculateRandomIndex(CHECK_TIMES)],
+        checkout: CHECK_TIMES[window.util.calculateRandomIndex(CHECK_TIMES)],
+        features: window.util.getRandomLengthArray(FEATURES_OPTIONS),
         description: '',
-        photos: getMixedArray(PHOTOS_COLLECTION)
+        photos: window.util.getMixedArray(PHOTOS_COLLECTION)
       },
 
       location: objectLocation
@@ -98,6 +60,7 @@
   }
 
   window.data = {
-    declarationsList: declarationsList
+    declarationsList: declarationsList,
+    DECLARATIONS_QUANTITY: DECLARATIONS_QUANTITY
   };
 })();
