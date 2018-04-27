@@ -68,13 +68,43 @@
 
     return elem;
   };
+
   window.util.map.insertBefore(cardElement, window.util.mapFiltersContainer);
-  window.util.declarationCard.classList.add('hidden');
+  var declarationCard = document.querySelector('.map__card');
+  declarationCard.classList.add('hidden');
+
+  var cardCloseButton = declarationCard.querySelector('.popup__close');
+
+  var onClickCardRender = function (evt) {
+    var target = evt.target;
+    while (target !== window.util.map) {
+      if (target.className === 'map__pin') {
+        declarationCard.classList.remove('hidden');
+        var data = target.getAttribute('data-number');
+        setCardData(window.card.declarationCard, data);
+      }
+      target = target.parentNode;
+    }
+    cardCloseButton.addEventListener('click', onClickCloseCard);
+    document.addEventListener('keydown', onEscCloseCard);
+  };
+
+  var onClickCloseCard = function () {
+    declarationCard.classList.add('hidden');
+    cardCloseButton.removeEventListener('click', onClickCloseCard);
+    document.removeEventListener('keydown', onEscCloseCard);
+  };
+
+  var onEscCloseCard = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      onClickCloseCard();
+    }
+  };
+
+
+  window.util.map.addEventListener('click', onClickCardRender);
 
   window.card = {
-    setCardData: setCardData
+    declarationCard: declarationCard
   }
-
-
-
 })();

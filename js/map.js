@@ -14,8 +14,6 @@ var MAIN_PIN_TOP_COORD = 375;
 var HALF_SIZE = 0.5;
 var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
-
-
 var MOVE_LIMITS = {top: 65, right: 1135, bottom: 625, left: 0};
 
 // ПОДГОТОВКА ДАННЫХ
@@ -200,9 +198,7 @@ var mapFeatures = window.util.mapFiltersContainer.querySelector('.map__features'
 var adForm = document.querySelector('.ad-form');
 var adFormHeader = adForm.querySelector('.ad-form-header');
 var adFormElement = adForm.querySelectorAll('.ad-form__element');
-var mainPin = window.util.map.querySelector('.map__pin--main');
 var addressField = adForm.querySelector('[name=address]');
-var cardCloseButton = window.util.declarationCard.querySelector('.popup__close');
 var featureCheckbox = adForm.querySelectorAll('.feature__checkbox');
 
 var changeDisabledAttr = function (elem) {
@@ -231,28 +227,28 @@ var setDisabled = function () {
 setDisabled();
 
 var getMainPinStartCoord = function () {
-  var mainPinCoordX = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE);
-  var mainPinCoordY = Math.round(mainPin.offsetTop + MAIN_PIN_HEIGHT * HALF_SIZE);
+  var mainPinCoordX = Math.round(window.util.mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(window.util.mainPin.offsetTop + MAIN_PIN_HEIGHT * HALF_SIZE);
   return mainPinCoordX + ', ' + mainPinCoordY;
 };
 addressField.value = getMainPinStartCoord();
 
 var getMainPinActiveCoord = function () {
-  var mainPinCoordX = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE);
-  var mainPinCoordY = Math.round(mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
+  var mainPinCoordX = Math.round(window.util.mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE);
+  var mainPinCoordY = Math.round(window.util.mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
   return mainPinCoordX + ', ' + mainPinCoordY;
 };
 
 var onClickActivatePage = function () {
-  map.classList.remove('map--faded');
+  window.util.map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   setDisabled();
   window.form.accommodationPrice.setAttribute('min', '1000');
   window.form.accommodationPrice.placeholder = 1000;
   window.form.capacity.selectedIndex = 2;
   window.pins.renderPins();
-  mainPin.removeEventListener('mouseup', onClickActivatePage);
-  mainPin.removeEventListener('keydown', onEnterActivatePage);
+  window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
+  window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
   window.form.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);
   window.form.synchronizeTimesFields(window.form.checkOut, window.form.checkIn);
   window.form.synchronizeFields(window.form.rooms, window.form.capacity, window.form.ROOM_NUMBERS, window.form.CAPACITY);
@@ -264,36 +260,39 @@ var onEnterActivatePage = function (evt) {
   }
 };
 
+window.util.mainPin.addEventListener('mouseup', onClickActivatePage);
+window.util.mainPin.addEventListener('keydown', onEnterActivatePage);
+
 // ОТОБРАЖЕНИЕ КАРТОЧКИ ПО КЛИКУ НА ПИН
-var onClickCardRender = function (evt) {
-  var target = evt.target;
-  while (target !== window.util.map) {
-    if (target.className === 'map__pin') {
-      window.util.declarationCard.classList.remove('hidden');
-      var data = target.getAttribute('data-number');
-      window.card.setCardData(window.util.declarationCard, data);
-    }
-    target = target.parentNode;
-  }
-  cardCloseButton.addEventListener('click', onClickCloseCard);
-  document.addEventListener('keydown', onEscCloseCard);
-};
-
-var onClickCloseCard = function () {
-  window.util.declarationCard.classList.add('hidden');
-  cardCloseButton.removeEventListener('click', onClickCloseCard);
-  document.removeEventListener('keydown', onEscCloseCard);
-};
-
-var onEscCloseCard = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
-    onClickCloseCard();
-  }
-};
-
-mainPin.addEventListener('mouseup', onClickActivatePage);
-mainPin.addEventListener('keydown', onEnterActivatePage);
-map.addEventListener('click', onClickCardRender);
+// var onClickCardRender = function (evt) {
+//   var target = evt.target;
+//   while (target !== window.util.map) {
+//     if (target.className === 'map__pin') {
+//       window.card.declarationCard.classList.remove('hidden');
+//       var data = target.getAttribute('data-number');
+//       window.card.setCardData(window.card.declarationCard, data);
+//     }
+//     target = target.parentNode;
+//   }
+//   cardCloseButton.addEventListener('click', onClickCloseCard);
+//   document.addEventListener('keydown', onEscCloseCard);
+// };
+//
+// var onClickCloseCard = function () {
+//   window.card.declarationCard.classList.add('hidden');
+//   cardCloseButton.removeEventListener('click', onClickCloseCard);
+//   document.removeEventListener('keydown', onEscCloseCard);
+// };
+//
+// var onEscCloseCard = function (evt) {
+//   if (evt.keyCode === ESC_KEYCODE) {
+//     onClickCloseCard();
+//   }
+// };
+//
+// mainPin.addEventListener('mouseup', onClickActivatePage);
+// mainPin.addEventListener('keydown', onEnterActivatePage);
+// window.util.map.addEventListener('click', onClickCardRender);
 
 
 // ВАЛИДАЦИЯ ФОРМЫ
@@ -548,7 +547,7 @@ var setLimitsLeft = function (coord, limitMin, limitMax, element) {
   }
 };
 
-mainPin.addEventListener('mousedown', function (evt) {
+window.util.mainPin.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
   var startCoords = {
@@ -569,13 +568,13 @@ mainPin.addEventListener('mousedown', function (evt) {
       y: moveEvt.clientY
     };
 
-    var coordTop = (mainPin.offsetTop - shift.y);
-    var coordLeft = (mainPin.offsetLeft - shift.x);
+    var coordTop = (window.util.mainPin.offsetTop - shift.y);
+    var coordLeft = (window.util.mainPin.offsetLeft - shift.x);
 
-    setLimitsTop(coordTop, MOVE_LIMITS.top, MOVE_LIMITS.bottom, mainPin);
-    setLimitsLeft(coordLeft, MOVE_LIMITS.left, MOVE_LIMITS.right, mainPin);
+    setLimitsTop(coordTop, MOVE_LIMITS.top, MOVE_LIMITS.bottom, window.util.mainPin);
+    setLimitsLeft(coordLeft, MOVE_LIMITS.left, MOVE_LIMITS.right, window.util.mainPin);
 
-    addressField.value = Math.round(mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE) + ', ' + (mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
+    addressField.value = Math.round(window.util.mainPin.offsetLeft + MAIN_PIN_WIDTH * HALF_SIZE) + ', ' + (window.util.mainPin.offsetTop + MAIN_PIN_ACTIVE_HEIGHT);
   };
 
   var onMouseUp = function (upEvt) {
