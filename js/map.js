@@ -53,7 +53,15 @@
     window.form.accommodationPrice.setAttribute('min', '1000');
     window.form.accommodationPrice.placeholder = 1000;
     window.form.capacity.selectedIndex = 2;
-    window.pins.renderPins();
+
+
+    window.load(function (loadedData) {
+      window.pins.renderPins(loadedData);
+
+    });
+
+
+    // window.pins.renderPins();
     window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
     window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
     window.util.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);
