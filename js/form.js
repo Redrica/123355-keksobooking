@@ -124,6 +124,10 @@
   title.addEventListener('invalid', onInputInvalid);
   accommodationPrice.addEventListener('invalid', onInputInvalid);
 
+  var success = document.querySelector('.success');
+
+  window.formToSend = document.querySelector('.ad-form');
+
   window.map.adForm.addEventListener('submit', function (evt) {
     if (checkTitleField()) {
       var errorTitleCondition = addInvalidCondition(title, titleInvalidMessage);
@@ -172,6 +176,14 @@
         errorCapacityCondition.textContent = '';
       });
     }
+
+    window.backend.upload(new FormData(formToSend), function (response) {
+      // onClickResetPage();
+      success.classList.remove('hidden');
+
+      console.log('Попытка отправить форму');
+    });
+    evt.preventDefault();
   });
 
   var onClickResetPage = function (evt) {

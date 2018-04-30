@@ -110,6 +110,6 @@
     isEnterEvent: isEnterEvent,
     changeDisabledAttr: changeDisabledAttr,
     synchronizeFields: synchronizeFields,
-    synchronizeTimesFields: synchronizeTimesFields
+    synchronizeTimesFields: synchronizeTimesFields,
   };
 })();

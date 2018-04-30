@@ -28,8 +28,6 @@
   };
 
   var cardElement = cardTemplate.cloneNode(true);
-
-
   var setCardData = function (elem, index, data) {
     elem.querySelector('.popup__avatar').src = data[index].author.avatar;
     elem.querySelector('.popup__title').textContent = data[index].offer.title;
@@ -68,92 +66,28 @@
     return elem;
   };
 
-
-
-  // var setCardData = function (elem, index) {
-  //   elem.querySelector('.popup__avatar').src = window.data.declarationsList[index].author.avatar;
-  //   elem.querySelector('.popup__title').textContent = window.data.declarationsList[index].offer.title;
-  //   elem.querySelector('.popup__text--address').textContent = window.data.declarationsList[index].offer.address;
-  //   elem.querySelector('.popup__text--price').textContent = window.data.declarationsList[index].offer.price + '₽/ночь';
-  //   switch (window.data.declarationsList[index].offer.type) {
-  //     case 'flat':
-  //       elem.querySelector('.popup__type').textContent = 'Квартира';
-  //       break;
-  //     case 'bungalo':
-  //       elem.querySelector('.popup__type').textContent = 'Бунгало';
-  //       break;
-  //     case 'house':
-  //       elem.querySelector('.popup__type').textContent = 'Дом';
-  //       break;
-  //     case 'palace':
-  //       elem.querySelector('.popup__type').textContent = 'Дворец';
-  //       break;
-  //   }
-  //   elem.querySelector('.popup__text--capacity').textContent = window.data.declarationsList[index].offer.rooms + ' комнаты для ' + window.data.declarationsList[index].offer.guests + ' гостей.';
-  //   elem.querySelector('.popup__text--time').textContent = 'Заезд после ' + window.data.declarationsList[index].offer.checkin + ', выезд до ' + window.data.declarationsList[index].offer.checkout;
-  //
-  //   var featuresList = elem.querySelector('.popup__features');
-  //   window.util.deleteInner(featuresList);
-  //
-  //   var featuresAvailable = window.data.declarationsList[index].offer.features;
-  //   createElementList(featuresAvailable, 'li', 'popup__feature--', 'popup__feature', featuresList);
-  //
-  //   elem.querySelector('.popup__description').textContent = window.data.declarationsList[index].offer.description;
-  //
-  //   var cardPictures = elem.querySelector('.popup__photos');
-  //   var userPictures = window.data.declarationsList[index].offer.photos;
-  //   window.util.deleteInner(cardPictures);
-  //   createImagesList(userPictures, 'img', 'popup__photo', cardPictures);
-  //
-  //   return elem;
-  // };
-
-
-
-
-
-
   window.util.map.insertBefore(cardElement, window.util.mapFiltersContainer);
   var declarationCard = document.querySelector('.map__card');
   declarationCard.classList.add('hidden');
 
   var cardCloseButton = declarationCard.querySelector('.popup__close');
 
-
   var onClickCardRender = function (evt) {
     var target = evt.target;
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
-        declarationCard.classList.remove('hidden');
         var dataAttr = target.getAttribute('data-number');
-        window.load(function (loadedData) {
+        var onLoad = function (loadedData) {
           setCardData(window.card.declarationCard, dataAttr, loadedData);
-        })
+        };
+        window.backend.load(onLoad, window.backend.onError);
+        declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;
     }
     cardCloseButton.addEventListener('click', onClickCloseCard);
     document.addEventListener('keydown', onEscCloseCard);
   };
-
-
-
-  // var onClickCardRender = function (evt) {
-  //   var target = evt.target;
-  //   while (target !== window.util.map) {
-  //     if (target.className === 'map__pin') {
-  //       declarationCard.classList.remove('hidden');
-  //       var data = target.getAttribute('data-number');
-  //       setCardData(window.card.declarationCard, data);
-  //     }
-  //     target = target.parentNode;
-  //   }
-  //   cardCloseButton.addEventListener('click', onClickCloseCard);
-  //   document.addEventListener('keydown', onEscCloseCard);
-  // };
-
-
-
 
   var onClickCloseCard = function () {
     declarationCard.classList.add('hidden');
