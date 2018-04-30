@@ -80,7 +80,7 @@
         var onLoadRender = function (loadedData) {
           setCardData(window.card.declarationCard, dataAttr, loadedData);
         };
-        window.backend.load(onLoadRender, window.backend.onErrorMessage);
+        window.backend.load(onLoadRender, window.util.onErrorMessage);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;

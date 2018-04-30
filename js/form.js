@@ -125,9 +125,14 @@
   accommodationPrice.addEventListener('invalid', onInputInvalid);
 
   var success = document.querySelector('.success');
+  var closeSuccessPopup = function () {
+    success.classList.add('hidden');
+  };
+
   var onSuccessUpload = function () {
     setDefaultCondition();
     success.classList.remove('hidden');
+    setTimeout(closeSuccessPopup, 1500);
   };
 
   window.map.adForm.addEventListener('submit', function (evt) {
@@ -179,7 +184,7 @@
       });
     }
 
-    window.backend.upload(new FormData(window.map.adForm), onSuccessUpload, window.backend.onErrorMessage);
+    window.backend.upload(new FormData(window.map.adForm), onSuccessUpload, window.util.onErrorMessage);
     evt.preventDefault();
   });
 

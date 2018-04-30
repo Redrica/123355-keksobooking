@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var URL_GET = 'https://js.dump.academy/keksobooking/data';
+  var URL_GET = 'https://js.dump.academy/keksobooking/data1';
   var URL_POST = 'https://js.dump.academy/keksobooking';
 
   var load = function (onLoad, onError) {
@@ -40,39 +40,6 @@
     xhr.send();
   };
 
-  var onErrorMessage = function (errorMessage) {
-    var node = document.createElement('div');
-    node.classList.add('server-error');
-    node.textContent = 'Упс… что-то пошло не так!';
-    document.body.insertAdjacentElement('afterbegin', node);
-
-    var fragment = document.createDocumentFragment();
-    var someText = document.createElement('p');
-    someText.textContent = errorMessage;
-    someText.style.fontSize = '20px';
-
-    var closeButton = document.createElement('button');
-    closeButton.classList.add('error-close');
-    closeButton.textContent = '+';
-
-    fragment.appendChild(someText);
-    fragment.appendChild(closeButton);
-    node.appendChild(fragment);
-
-    var onClickCloseError = function () {
-      closeButton.removeEventListener('click', onClickCloseError);
-      document.removeEventListener('keydown', onEscCloseCard);
-      node.parentNode.removeChild(node);
-    };
-
-    var onEscCloseCard = function (evt) {
-      window.util.isEscEvent(evt, onClickCloseError);
-    };
-
-    closeButton.addEventListener('click', onClickCloseError);
-    document.addEventListener('keydown', onEscCloseCard);
-  };
-
   var upload = function (data, onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
@@ -99,7 +66,6 @@
 
   window.backend = {
     load: load,
-    onErrorMessage: onErrorMessage,
     upload: upload
   };
 })();
