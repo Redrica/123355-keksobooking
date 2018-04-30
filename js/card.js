@@ -77,10 +77,10 @@
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
-        var onLoad = function (loadedData) {
+        var onLoadRender = function (loadedData) {
           setCardData(window.card.declarationCard, dataAttr, loadedData);
         };
-        window.backend.load(onLoad, window.backend.onError);
+        window.backend.load(onLoadRender, window.backend.onErrorMessage);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;

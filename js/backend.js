@@ -2,7 +2,7 @@
 
 (function () {
   var URL_GET = 'https://js.dump.academy/keksobooking/data';
-  var URL_POST = 'https://js.dump.academy/keksobooking';
+  var URL_POST = 'https://js.dump.academy/keksobooking1';
 
   var load = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -40,16 +40,37 @@
     xhr.send();
   };
 
-  var onError = function (errorMessage) {
+  var onErrorMessage = function (errorMessage) {
     var node = document.createElement('div');
     node.classList.add('server-error');
     node.textContent = 'Упс… что-то пошло не так!';
     document.body.insertAdjacentElement('afterbegin', node);
 
+    var fragment = document.createDocumentFragment();
     var someText = document.createElement('p');
     someText.textContent = errorMessage;
     someText.style.fontSize = '20px';
-    node.appendChild(someText);
+
+    var closeButton = document.createElement('button');
+    closeButton.classList.add('error-close');
+    closeButton.textContent = '+';
+
+    fragment.appendChild(someText);
+    fragment.appendChild(closeButton);
+    node.appendChild(fragment);
+
+    var onClickCloseError = function () {
+      closeButton.removeEventListener('click', onClickCloseError);
+      document.removeEventListener('keydown', onEscCloseCard);
+      node.parentNode.removeChild(node);
+    };
+
+    var onEscCloseCard = function (evt) {
+      window.util.isEscEvent(evt, onClickCloseError);
+    };
+
+    closeButton.addEventListener('click', onClickCloseError);
+    document.addEventListener('keydown', onEscCloseCard);
   };
 
   var upload = function (data, onLoad, onError) {
@@ -57,8 +78,20 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      onLoad(xhr.response);
+      if (xhr.status === 200) {
+        onLoad(xhr.response);
+      } else {
+        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+      }
     });
+
+    xhr.addEventListener('error', function () {
+      onError('Произошла ошибка соединения');
+    });
+    xhr.addEventListener('timeout', function () {
+      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+    });
+    xhr.timeout = 5000;
 
     xhr.open('POST', URL_POST);
     xhr.send(data);
@@ -66,7 +99,7 @@
 
   window.backend = {
     load: load,
-    onError: onError,
+    onErrorMessage: onErrorMessage,
     upload: upload
   }
 })();

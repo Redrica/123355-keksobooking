@@ -1235,3 +1235,17 @@ select.invalid-field {
   border-radius: 30px;
   box-shadow: inset 0 0 30px red;
 }
+
+.error-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 101;
+  font-size: 20px;
+  text-transform: uppercase;
+  text-align: center;
+  background: transparent;
+  border: 1px solid #eeeeee;
+  border-radius: 50%;
+  transform: rotate(45deg);
+}

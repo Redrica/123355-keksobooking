@@ -126,8 +126,6 @@
 
   var success = document.querySelector('.success');
 
-  window.formToSend = document.querySelector('.ad-form');
-
   window.map.adForm.addEventListener('submit', function (evt) {
     if (checkTitleField()) {
       var errorTitleCondition = addInvalidCondition(title, titleInvalidMessage);
@@ -177,17 +175,14 @@
       });
     }
 
-    window.backend.upload(new FormData(formToSend), function (response) {
-      // onClickResetPage();
+    window.backend.upload(new FormData(window.map.adForm), function (response) {
+      setDefaultCondition();
       success.classList.remove('hidden');
-
-      console.log('Попытка отправить форму');
-    });
+    }, window.backend.onErrorMessage);
     evt.preventDefault();
   });
 
-  var onClickResetPage = function (evt) {
-    evt.preventDefault();
+  var setDefaultCondition = function () {
     title.value = '';
     window.map.addressField.value = window.map.getMainPinStartCoord();
     accommodationType.selectedIndex = '0';
@@ -212,6 +207,11 @@
     window.util.mainPin.addEventListener('keydown', window.map.onEnterActivatePage);
     removePins(window.pins.mapPins);
     removeErrors();
+  };
+
+  var onClickResetPage = function (evt) {
+    evt.preventDefault();
+    setDefaultCondition();
   };
 
   var removePins = function (element) {
