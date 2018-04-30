@@ -96,6 +96,39 @@
     });
   };
 
+  var onErrorMessage = function (errorMessage) {
+    var node = document.createElement('div');
+    node.classList.add('server-error');
+    node.textContent = 'Упс… что-то пошло не так!';
+    document.body.insertAdjacentElement('afterbegin', node);
+
+    var fragment = document.createDocumentFragment();
+    var someText = document.createElement('p');
+    someText.textContent = errorMessage;
+    someText.style.fontSize = '20px';
+
+    var closeButton = document.createElement('button');
+    closeButton.classList.add('error-close');
+    closeButton.textContent = '+';
+
+    fragment.appendChild(someText);
+    fragment.appendChild(closeButton);
+    node.appendChild(fragment);
+
+    var onClickCloseError = function () {
+      closeButton.removeEventListener('click', onClickCloseError);
+      document.removeEventListener('keydown', onEscCloseCard);
+      node.parentNode.removeChild(node);
+    };
+
+    var onEscCloseCard = function (evt) {
+      window.util.isEscEvent(evt, onClickCloseError);
+    };
+
+    closeButton.addEventListener('click', onClickCloseError);
+    document.addEventListener('keydown', onEscCloseCard);
+  };
+
   window.util = {
     map: map,
     mapFiltersContainer: mapFiltersContainer,
@@ -110,6 +143,7 @@
     isEnterEvent: isEnterEvent,
     changeDisabledAttr: changeDisabledAttr,
     synchronizeFields: synchronizeFields,
-    synchronizeTimesFields: synchronizeTimesFields
+    synchronizeTimesFields: synchronizeTimesFields,
+    onErrorMessage: onErrorMessage
   };
 })();

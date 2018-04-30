@@ -124,6 +124,17 @@
   title.addEventListener('invalid', onInputInvalid);
   accommodationPrice.addEventListener('invalid', onInputInvalid);
 
+  var success = document.querySelector('.success');
+  var closeSuccessPopup = function () {
+    success.classList.add('hidden');
+  };
+
+  var onSuccessUpload = function () {
+    setDefaultCondition();
+    success.classList.remove('hidden');
+    setTimeout(closeSuccessPopup, 1500);
+  };
+
   window.map.adForm.addEventListener('submit', function (evt) {
     if (checkTitleField()) {
       var errorTitleCondition = addInvalidCondition(title, titleInvalidMessage);
@@ -172,10 +183,12 @@
         errorCapacityCondition.textContent = '';
       });
     }
+
+    window.backend.upload(new FormData(window.map.adForm), onSuccessUpload, window.util.onErrorMessage);
+    evt.preventDefault();
   });
 
-  var onClickResetPage = function (evt) {
-    evt.preventDefault();
+  var setDefaultCondition = function () {
     title.value = '';
     window.map.addressField.value = window.map.getMainPinStartCoord();
     accommodationType.selectedIndex = '0';
@@ -200,6 +213,11 @@
     window.util.mainPin.addEventListener('keydown', window.map.onEnterActivatePage);
     removePins(window.pins.mapPins);
     removeErrors();
+  };
+
+  var onClickResetPage = function (evt) {
+    evt.preventDefault();
+    setDefaultCondition();
   };
 
   var removePins = function (element) {

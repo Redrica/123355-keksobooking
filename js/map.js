@@ -46,6 +46,10 @@
     return mainPinCoordX + ', ' + mainPinCoordY;
   };
 
+  var onLoadRender = function (loadedData) {
+    window.pins.renderPins(loadedData);
+  };
+
   var onClickActivatePage = function () {
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
@@ -53,7 +57,7 @@
     window.form.accommodationPrice.setAttribute('min', '1000');
     window.form.accommodationPrice.placeholder = 1000;
     window.form.capacity.selectedIndex = 2;
-    window.pins.renderPins();
+    window.backend.load(onLoadRender, window.util.onErrorMessage);
     window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
     window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
     window.util.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);
