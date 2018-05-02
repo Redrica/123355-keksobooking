@@ -132,7 +132,7 @@
   var onSuccessUpload = function () {
     setDefaultCondition();
     success.classList.remove('hidden');
-    setTimeout(closeSuccessPopup, 1500);
+    setTimeout(closeSuccessPopup, 5000);
   };
 
   window.map.adForm.addEventListener('submit', function (evt) {
