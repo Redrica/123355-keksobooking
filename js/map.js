@@ -140,6 +140,8 @@
 
 
   var dataFromServer = [];
+  var filterData = {};
+
 
   var testData = function (loadedData) {
     dataFromServer = loadedData;
@@ -147,8 +149,6 @@
 
     var dataFiltered = dataFromServer.filter(function (it) {
       return it.offer.type === filterData.type;
-    }).filter(function (it) {
-      return it.offer.rooms === filterData.rooms;
     });
 
     // while (window.pins.mapPins.firstChild) {
@@ -160,7 +160,6 @@
     console.log(dataFiltered);
   };
 
-  var filterData = {};
 
   mapFiltersAll.addEventListener('change', function (evt) {
     var target = evt.target;
