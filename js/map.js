@@ -15,7 +15,6 @@
   var adFormElement = adForm.querySelectorAll('.ad-form__element');
   var addressField = adForm.querySelector('[name=address]');
   var featureCheckbox = adForm.querySelectorAll('.feature__checkbox');
-  var mapFiltersAll = window.util.mapFiltersContainer.querySelector('.map__filters');
 
   var setDisabled = function () {
     Array.prototype.forEach.call(mapFilter, function (elem) {
@@ -58,7 +57,7 @@
     window.form.accommodationPrice.setAttribute('min', '1000');
     window.form.accommodationPrice.placeholder = 1000;
     window.form.capacity.selectedIndex = 2;
-    // window.backend.load(onLoadRender, window.util.onErrorMessage);
+    window.backend.load(onLoadRender, window.util.onErrorMessage);
     window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
     window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
     window.util.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);
@@ -139,46 +138,53 @@
   // вот здесь начало фильтрации
 
 
-  var dataFromServer = [];
-  var filterData = {};
-
-
-  var testData = function (loadedData) {
-    dataFromServer = loadedData;
-    // window.pins.renderPins(loadedData);
-
-    var dataFiltered = dataFromServer.filter(function (it) {
-      return it.offer.type === filterData.type;
-    });
-
-    // while (window.pins.mapPins.firstChild) {
-    //   window.pins.mapPins.removeChild(window.pins.mapPins.firstChild);
-    // }
-
-    window.pins.renderPins(dataFiltered);
-    console.log(dataFromServer);
-    console.log(dataFiltered);
-  };
-
-
-  mapFiltersAll.addEventListener('change', function (evt) {
-    var target = evt.target;
-    while (target !== mapFiltersAll) {
-      if (target.className === 'map__filter') {
-        var formElements = mapFiltersAll.elements;
-        filterData.type = formElements['housing-type'].value;
-        filterData.price = formElements['housing-price'].value;
-        filterData.rooms = formElements["housing-rooms"].value;
-        filterData.guests = formElements['housing-guests'].value;
-
-        console.log(filterData);
-        window.backend.load(testData);
-      }
-      target = target.parentNode;
-    }
-  });
-
-  console.log(dataFromServer);
+  // var dataFromServer = [];
+  // var filterData = {};
+  //
+  //
+  // var testData = function (loadedData) {
+  //   dataFromServer = loadedData;
+  //   window.pins.renderPins(loadedData);
+  //
+  //   var dataFiltered = dataFromServer.filter(function (it) {
+  //     return it.offer.type === filterData.type;
+  //   });
+  //   console.log('dataFiltered ' + dataFiltered);
+  //
+  //   console.log(dataFiltered);
+  //
+  //   var dataFiltered2 = dataFiltered.filter(function (it) {
+  //     return it.offer.rooms === filterData.rooms;
+  //   });
+  //
+  //   while (window.util.mainPin.nextElementSibling) {
+  //     window.pins.mapPins.removeChild(window.pins.mapPins.lastChild);
+  //   }
+  //
+  //   window.pins.renderPins(dataFiltered);
+  //   console.log(dataFromServer);
+  //   console.log('dataFiltered2 ' + dataFiltered2);
+  // };
+  //
+  //
+  // mapFiltersAll.addEventListener('change', function (evt) {
+  //   var target = evt.target;
+  //   while (target !== mapFiltersAll) {
+  //     if (target.className === 'map__filter') {
+  //       var formElements = mapFiltersAll.elements;
+  //       filterData.type = formElements['housing-type'].value;
+  //       filterData.price = formElements['housing-price'].value;
+  //       filterData.rooms = formElements["housing-rooms"].value;
+  //       filterData.guests = formElements['housing-guests'].value;
+  //
+  //       console.log(filterData);
+  //       window.backend.load(testData);
+  //     }
+  //     target = target.parentNode;
+  //   }
+  // });
+  //
+  // console.log(dataFromServer);
 
 
 
@@ -188,11 +194,9 @@
   window.map = {
     MAIN_PIN_LEFT_COORD: MAIN_PIN_LEFT_COORD,
     MAIN_PIN_TOP_COORD: MAIN_PIN_TOP_COORD,
-    mapFiltersAll: mapFiltersAll,
     adForm: adForm,
     addressField: addressField,
     featureCheckbox: featureCheckbox,
-    dataFromServer: dataFromServer,
     setDisabled: setDisabled,
     onClickActivatePage: onClickActivatePage,
     onEnterActivatePage: onEnterActivatePage,
