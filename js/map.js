@@ -54,15 +54,26 @@
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     setDisabled();
+    window.filter.mapFiltersAll.addEventListener('change', window.filter.onChangeFilter);
+    window.form.title.addEventListener('invalid', window.form.onInputInvalid);
+    window.form.accommodationType.addEventListener('change', window.form.onTypeChangeSetPrice);
+    window.form.accommodationPrice.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationPrice.setAttribute('min', '1000');
     window.form.accommodationPrice.placeholder = 1000;
     window.form.capacity.selectedIndex = 2;
     window.backend.load(onLoadRender, window.util.onErrorMessage);
+
+
+    window.util.map.addEventListener('click', window.card.onClickCardRender);
+
+
     window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
     window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
     window.util.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);
     window.util.synchronizeTimesFields(window.form.checkOut, window.form.checkIn);
     window.util.synchronizeFields(window.form.rooms, window.form.capacity, window.form.ROOM_NUMBERS, window.form.CAPACITY);
+    window.map.adForm.addEventListener('submit', window.form.onFormSubmit);
+    window.form.reset.addEventListener('click', window.form.onClickResetPage);
   };
 
   var onEnterActivatePage = function (evt) {
@@ -92,7 +103,7 @@
     }
   };
 
-  window.util.mainPin.addEventListener('mousedown', function (evt) {
+  var onMousedownGetCoord = function (evt) {
     evt.preventDefault();
     var startCoords = {
       x: evt.clientX,
@@ -130,66 +141,9 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-  });
+  };
 
-
-
-  // ////////////////////////////////////////////////////////////////////
-  // вот здесь начало фильтрации
-
-
-  // var dataFromServer = [];
-  // var filterData = {};
-  //
-  //
-  // var testData = function (loadedData) {
-  //   dataFromServer = loadedData;
-  //   window.pins.renderPins(loadedData);
-  //
-  //   var dataFiltered = dataFromServer.filter(function (it) {
-  //     return it.offer.type === filterData.type;
-  //   });
-  //   console.log('dataFiltered ' + dataFiltered);
-  //
-  //   console.log(dataFiltered);
-  //
-  //   var dataFiltered2 = dataFiltered.filter(function (it) {
-  //     return it.offer.rooms === filterData.rooms;
-  //   });
-  //
-  //   while (window.util.mainPin.nextElementSibling) {
-  //     window.pins.mapPins.removeChild(window.pins.mapPins.lastChild);
-  //   }
-  //
-  //   window.pins.renderPins(dataFiltered);
-  //   console.log(dataFromServer);
-  //   console.log('dataFiltered2 ' + dataFiltered2);
-  // };
-  //
-  //
-  // mapFiltersAll.addEventListener('change', function (evt) {
-  //   var target = evt.target;
-  //   while (target !== mapFiltersAll) {
-  //     if (target.className === 'map__filter') {
-  //       var formElements = mapFiltersAll.elements;
-  //       filterData.type = formElements['housing-type'].value;
-  //       filterData.price = formElements['housing-price'].value;
-  //       filterData.rooms = formElements["housing-rooms"].value;
-  //       filterData.guests = formElements['housing-guests'].value;
-  //
-  //       console.log(filterData);
-  //       window.backend.load(testData);
-  //     }
-  //     target = target.parentNode;
-  //   }
-  // });
-  //
-  // console.log(dataFromServer);
-
-
-
-  // /////////////////////////////////////////////////////////////////////////////////////
-
+  window.util.mainPin.addEventListener('mousedown', onMousedownGetCoord);
 
   window.map = {
     MAIN_PIN_LEFT_COORD: MAIN_PIN_LEFT_COORD,

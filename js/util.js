@@ -1,49 +1,49 @@
 'use strict';
 
 (function () {
-  var MIN_ARRAY_LENGTH = 1;
+  // var MIN_ARRAY_LENGTH = 1;
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
   var mainPin = map.querySelector('.map__pin--main');
 
-  var calculateRandomIndex = function (arr) {
-    return Math.round(Math.random() * (arr.length - 1));
-  };
-
-  var getRandomNumber = function (min, max) {
-    return Math.round(Math.random() * (max - min)) + min;
-  };
-
-  var getRandomUniqueElement = function (arrToSplice) {
-    var indexRandom = calculateRandomIndex(arrToSplice);
-    var splicedElement = arrToSplice.splice(indexRandom, 1);
-    return splicedElement[0];
-  };
-
-  var getMixedArray = function (originalArray) {
-    var mixed = [];
-    var originalCopy = originalArray.slice();
-    for (var j = 0; j < originalArray.length; j++) {
-      var randomIndex = calculateRandomIndex(originalCopy);
-      mixed[j] = originalCopy[randomIndex];
-      originalCopy.splice(randomIndex, 1);
-    }
-    return mixed;
-  };
-
-  var getRandomLengthArray = function (arr) {
-    var randomLengthArray = [];
-    var originalArray = arr.slice();
-    randomLengthArray.length = getRandomNumber(MIN_ARRAY_LENGTH, originalArray.length);
-    for (var j = 0; j < randomLengthArray.length; j++) {
-      var randomIndex = calculateRandomIndex(originalArray);
-      randomLengthArray[j] = originalArray[randomIndex];
-      originalArray.splice(randomIndex, 1);
-    }
-    return randomLengthArray;
-  };
+  // var calculateRandomIndex = function (arr) {
+  //   return Math.round(Math.random() * (arr.length - 1));
+  // };
+  //
+  // var getRandomNumber = function (min, max) {
+  //   return Math.round(Math.random() * (max - min)) + min;
+  // };
+  //
+  // var getRandomUniqueElement = function (arrToSplice) {
+  //   var indexRandom = calculateRandomIndex(arrToSplice);
+  //   var splicedElement = arrToSplice.splice(indexRandom, 1);
+  //   return splicedElement[0];
+  // };
+  //
+  // var getMixedArray = function (originalArray) {
+  //   var mixed = [];
+  //   var originalCopy = originalArray.slice();
+  //   for (var j = 0; j < originalArray.length; j++) {
+  //     var randomIndex = calculateRandomIndex(originalCopy);
+  //     mixed[j] = originalCopy[randomIndex];
+  //     originalCopy.splice(randomIndex, 1);
+  //   }
+  //   return mixed;
+  // };
+  //
+  // var getRandomLengthArray = function (arr) {
+  //   var randomLengthArray = [];
+  //   var originalArray = arr.slice();
+  //   randomLengthArray.length = getRandomNumber(MIN_ARRAY_LENGTH, originalArray.length);
+  //   for (var j = 0; j < randomLengthArray.length; j++) {
+  //     var randomIndex = calculateRandomIndex(originalArray);
+  //     randomLengthArray[j] = originalArray[randomIndex];
+  //     originalArray.splice(randomIndex, 1);
+  //   }
+  //   return randomLengthArray;
+  // };
 
   var deleteInner = function (element) {
     while (element.firstChild) {
@@ -96,6 +96,13 @@
     });
   };
 
+  var removePins = function (element) {
+    while (element.lastChild !== window.util.mainPin) {
+      element.removeChild(element.lastChild);
+    }
+    return element;
+  };
+
   var onErrorMessage = function (errorMessage) {
     var node = document.createElement('div');
     node.classList.add('server-error');
@@ -133,17 +140,18 @@
     map: map,
     mapFiltersContainer: mapFiltersContainer,
     mainPin: mainPin,
-    calculateRandomIndex: calculateRandomIndex,
-    getRandomNumber: getRandomNumber,
-    getRandomUniqueElement: getRandomUniqueElement,
-    getMixedArray: getMixedArray,
-    getRandomLengthArray: getRandomLengthArray,
+    // calculateRandomIndex: calculateRandomIndex,
+    // getRandomNumber: getRandomNumber,
+    // getRandomUniqueElement: getRandomUniqueElement,
+    // getMixedArray: getMixedArray,
+    // getRandomLengthArray: getRandomLengthArray,
     deleteInner: deleteInner,
     isEscEvent: isEscEvent,
     isEnterEvent: isEnterEvent,
     changeDisabledAttr: changeDisabledAttr,
     synchronizeFields: synchronizeFields,
     synchronizeTimesFields: synchronizeTimesFields,
+    removePins: removePins,
     onErrorMessage: onErrorMessage
   };
 })();

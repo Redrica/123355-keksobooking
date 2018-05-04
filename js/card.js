@@ -77,10 +77,26 @@
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
+
         var onLoadRender = function (loadedData) {
           setCardData(window.card.declarationCard, dataAttr, loadedData);
         };
         window.backend.load(onLoadRender, window.util.onErrorMessage);
+        declarationCard.classList.remove('hidden');
+      }
+      target = target.parentNode;
+    }
+    cardCloseButton.addEventListener('click', onClickCloseCard);
+    document.addEventListener('keydown', onEscCloseCard);
+  };
+
+  var onFilterCardRender = function (evt) {
+    var target = evt.target;
+    while (target !== window.util.map) {
+      if (target.className === 'map__pin') {
+        var dataAttr = target.getAttribute('data-number');
+
+        window.card.setCardData(window.card.declarationCard, dataAttr, window.dataFiltered);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;
@@ -99,9 +115,10 @@
     window.util.isEscEvent(evt, onClickCloseCard);
   };
 
-  window.util.map.addEventListener('click', onClickCardRender);
-
   window.card = {
-    declarationCard: declarationCard
+    declarationCard: declarationCard,
+    setCardData: setCardData,
+    onClickCardRender: onClickCardRender,
+    onFilterCardRender: onFilterCardRender
   };
 })();

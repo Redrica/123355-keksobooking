@@ -22,6 +22,8 @@
   var rooms = window.map.adForm.querySelector('select[name="rooms"]');
   var capacity = window.map.adForm.querySelector('select[name="capacity"]');
   var reset = window.map.adForm.querySelector('.ad-form__reset');
+  var success = document.querySelector('.success');
+  var titleInvalidMessage = 'Введенное значение должно быть от ' + MIN_TITLE_LENGTH + ' до ' + MAX_TITLE_LENGTH + ' символов.';
 
   // ПРОВЕРИТЬ, ЧТО НЕ ТАК С ПЛЕЙСХОЛДЕРОМ О_о
   var onTypeChangeSetPrice = function (evt) {
@@ -44,7 +46,6 @@
         break;
     }
   };
-  accommodationType.addEventListener('change', onTypeChangeSetPrice);
 
   var checkTitleField = function () {
     return (!title.validity.valid || title.value.length < MIN_TITLE_LENGTH || title.value.length > MAX_TITLE_LENGTH);
@@ -106,8 +107,6 @@
     return error;
   };
 
-  var titleInvalidMessage = 'Введенное значение должно быть от ' + MIN_TITLE_LENGTH + ' до ' + MAX_TITLE_LENGTH + ' символов.';
-
   var getPriceInvalidText = function (elem) {
     var itemText = elem.item(elem.selectedIndex).textContent;
     return 'Слишком мало для ' + itemText;
@@ -121,10 +120,6 @@
     });
   };
 
-  title.addEventListener('invalid', onInputInvalid);
-  accommodationPrice.addEventListener('invalid', onInputInvalid);
-
-  var success = document.querySelector('.success');
   var closeSuccessPopup = function () {
     success.classList.add('hidden');
   };
@@ -135,7 +130,7 @@
     setTimeout(closeSuccessPopup, 5000);
   };
 
-  window.map.adForm.addEventListener('submit', function (evt) {
+  var onFormSubmit = function (evt) {
     if (checkTitleField()) {
       var errorTitleCondition = addInvalidCondition(title, titleInvalidMessage);
 
@@ -186,7 +181,7 @@
 
     window.backend.upload(new FormData(window.map.adForm), onSuccessUpload, window.util.onErrorMessage);
     evt.preventDefault();
-  });
+  };
 
   var setDefaultCondition = function () {
     title.value = '';
@@ -200,10 +195,16 @@
     Array.prototype.forEach.call(window.map.featureCheckbox, function (item) {
       item.checked = false;
     });
+    window.form.title.removeEventListener('invalid', window.form.onInputInvalid);
+    window.form.accommodationType.removeEventListener('change', window.form.onTypeChangeSetPrice);
+    window.form.accommodationPrice.removeEventListener('invalid', window.form.onInputInvalid);
+    window.map.adForm.removeEventListener('submit', onFormSubmit);
+    reset.removeEventListener('click', onClickResetPage);
     window.card.declarationCard.classList.add('hidden');
     window.util.mainPin.style.left = window.map.MAIN_PIN_LEFT_COORD + 'px';
     window.util.mainPin.style.top = window.map.MAIN_PIN_TOP_COORD + 'px';
     window.map.setDisabled();
+    window.filter.mapFiltersAll.removeEventListener('change', window.filter.onChangeFilter);
     window.util.map.classList.add('map--faded');
     window.map.adForm.classList.add('ad-form--disabled');
     Array.prototype.forEach.call(inputs, function (item) {
@@ -211,20 +212,13 @@
     });
     window.util.mainPin.addEventListener('mouseup', window.map.onClickActivatePage);
     window.util.mainPin.addEventListener('keydown', window.map.onEnterActivatePage);
-    removePins(window.pins.mapPins);
+    window.util.removePins(window.pins.mapPins);
     removeErrors();
   };
 
   var onClickResetPage = function (evt) {
     evt.preventDefault();
     setDefaultCondition();
-  };
-
-  var removePins = function (element) {
-    while (element.lastChild !== window.util.mainPin) {
-      element.removeChild(element.lastChild);
-    }
-    return element;
   };
 
   var removeErrors = function () {
@@ -234,15 +228,20 @@
     });
   };
 
-  reset.addEventListener('click', onClickResetPage);
-
   window.form = {
     CAPACITY: [[2], [1, 2], [0, 1, 2], [3]],
     ROOM_NUMBERS: ['1', '2', '3', '100'],
+    title: title,
     checkIn: checkIn,
     checkOut: checkOut,
     capacity: capacity,
     rooms: rooms,
-    accommodationPrice: accommodationPrice
+    accommodationType: accommodationType,
+    accommodationPrice: accommodationPrice,
+    reset: reset,
+    onTypeChangeSetPrice: onTypeChangeSetPrice,
+    onInputInvalid: onInputInvalid,
+    onFormSubmit: onFormSubmit,
+    onClickResetPage: onClickResetPage
   };
 })();
