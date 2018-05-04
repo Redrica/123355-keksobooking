@@ -8,6 +8,7 @@
   var MAIN_PIN_TOP_COORD = 375;
   var HALF_SIZE = 0.5;
   var MOVE_LIMITS = {top: 65, right: 1135, bottom: 625, left: 0};
+
   var mapFilter = window.util.mapFiltersContainer.querySelectorAll('.map__filter');
   var mapFeatures = window.util.mapFiltersContainer.querySelector('.map__features');
   var adForm = document.querySelector('.ad-form');
@@ -53,16 +54,14 @@
   var onClickActivatePage = function () {
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
-    setDisabled();
-
     window.backend.load(onLoadRender, window.util.onErrorMessage);
     window.filter.mapFiltersAll.addEventListener('change', window.filter.onFilterChange);
     window.form.title.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationType.addEventListener('change', window.form.onTypeChangeSetPrice);
     window.form.accommodationPrice.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationPrice.setAttribute('min', '1000');
-    window.form.accommodationPrice.placeholder = 1000;
-    window.form.capacity.selectedIndex = 2;
+    window.form.accommodationPrice.placeholder = window.form.FLAT_MIN_PRICE;
+    window.form.capacity.selectedIndex = window.util.SelectedIndex.SECOND;
     window.util.map.addEventListener('click', window.card.onClickCardRender);
     window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
     window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
@@ -71,6 +70,8 @@
     window.util.synchronizeFields(window.form.rooms, window.form.capacity, window.form.ROOM_NUMBERS, window.form.CAPACITY);
     window.map.adForm.addEventListener('submit', window.form.onFormSubmit);
     window.form.reset.addEventListener('click', window.form.onClickResetPage);
+
+    setDisabled();
   };
 
   var onEnterActivatePage = function (evt) {

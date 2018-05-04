@@ -4,6 +4,10 @@
   var PICTURE_WIDTH = 45;
   var PICTURE_HEIGHT = 40;
   var PICTURE_ALT = 'Фотография жилья';
+  var FLAT = 'Квартира';
+  var BUNGALO = 'Бунгало';
+  var HOUSE = 'Дом';
+  var PALACE = 'Дворец';
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
   var createElementList = function (arr, tagName, classNameTemplate, className, parent) {
@@ -35,16 +39,16 @@
     elem.querySelector('.popup__text--price').textContent = data[index].offer.price + '₽/ночь';
     switch (data[index].offer.type) {
       case 'flat':
-        elem.querySelector('.popup__type').textContent = 'Квартира';
+        elem.querySelector('.popup__type').textContent = FLAT;
         break;
       case 'bungalo':
-        elem.querySelector('.popup__type').textContent = 'Бунгало';
+        elem.querySelector('.popup__type').textContent = BUNGALO;
         break;
       case 'house':
-        elem.querySelector('.popup__type').textContent = 'Дом';
+        elem.querySelector('.popup__type').textContent = HOUSE;
         break;
       case 'palace':
-        elem.querySelector('.popup__type').textContent = 'Дворец';
+        elem.querySelector('.popup__type').textContent = PALACE;
         break;
     }
     elem.querySelector('.popup__text--capacity').textContent = data[index].offer.rooms + ' комнаты для ' + data[index].offer.guests + ' гостей.';

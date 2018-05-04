@@ -13,6 +13,8 @@
   var CAPACITY_INVALID_MESSAGE = 'Количество гостей не соответствует выбранному количеству комнат';
   var ROOM_NUMBERS = ['1', '2', '3', '100'];
   var CAPACITY_VALUES = ['3', '2', '1', '0'];
+  var POPUP_TIMEOUT = 5000;
+
   var inputs = window.map.adForm.elements;
   var title = window.map.adForm.querySelector('[name=title]');
   var accommodationType = window.map.adForm.querySelector('select[name="type"]');
@@ -25,7 +27,6 @@
   var success = document.querySelector('.success');
   var titleInvalidMessage = 'Введенное значение должно быть от ' + MIN_TITLE_LENGTH + ' до ' + MAX_TITLE_LENGTH + ' символов.';
 
-  // ПРОВЕРИТЬ, ЧТО НЕ ТАК С ПЛЕЙСХОЛДЕРОМ О_о
   var onTypeChangeSetPrice = function (evt) {
     switch (evt.target.value) {
       case 'flat':
@@ -127,7 +128,7 @@
   var onSuccessUpload = function () {
     setDefaultCondition();
     success.classList.remove('hidden');
-    setTimeout(closeSuccessPopup, 5000);
+    setTimeout(closeSuccessPopup, POPUP_TIMEOUT);
   };
 
   var onFormSubmit = function (evt) {
@@ -186,12 +187,12 @@
   var setDefaultCondition = function () {
     title.value = '';
     window.map.addressField.value = window.map.getMainPinStartCoord();
-    accommodationType.selectedIndex = '0';
+    accommodationType.selectedIndex = window.util.SelectedIndex.ZERO;
     accommodationPrice.value = '';
-    checkIn.selectedIndex = '0';
-    checkOut.selectedIndex = '0';
-    rooms.selectedIndex = '0';
-    capacity.selectedIndex = '2';
+    checkIn.selectedIndex = window.util.SelectedIndex.ZERO;
+    checkOut.selectedIndex = window.util.SelectedIndex.ZERO;
+    rooms.selectedIndex = window.util.SelectedIndex.ZERO;
+    capacity.selectedIndex = window.util.SelectedIndex.ZERO;
     Array.prototype.forEach.call(window.map.featureCheckbox, function (item) {
       item.checked = false;
     });
@@ -204,7 +205,7 @@
     window.util.mainPin.style.left = window.map.MAIN_PIN_LEFT_COORD + 'px';
     window.util.mainPin.style.top = window.map.MAIN_PIN_TOP_COORD + 'px';
     window.map.setDisabled();
-    window.filter.mapFiltersAll.removeEventListener('change', window.filter.onChangeFilter);
+    window.filter.mapFiltersAll.removeEventListener('change', window.filter.onFilterChange);
     window.util.map.classList.add('map--faded');
     window.map.adForm.classList.add('ad-form--disabled');
     Array.prototype.forEach.call(inputs, function (item) {
@@ -229,6 +230,7 @@
   };
 
   window.form = {
+    FLAT_MIN_PRICE: FLAT_MIN_PRICE,
     CAPACITY: [[2], [1, 2], [0, 1, 2], [3]],
     ROOM_NUMBERS: ['1', '2', '3', '100'],
     title: title,

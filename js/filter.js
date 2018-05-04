@@ -66,36 +66,35 @@
   };
 
   var renderFilteredPins = function (loadedData) {
-    console.log('Загруженные данные');
-    console.log(loadedData);
+    // console.log('Загруженные данные');
+    // console.log(loadedData);
 
     window.dataFiltered = loadedData.filter(compareAll);
-    console.log('Отфильтрованные данные');
-    console.log(window.dataFiltered);
+    // console.log('Отфильтрованные данные');
+    // console.log(window.dataFiltered);
 
-    // удаляю пины и отрисовываю в соответствии с отфильтрованными данными
     window.util.removePins(window.pins.mapPins);
     window.pins.renderPins(window.dataFiltered);
   };
 
   var onFilterChange = function () {
-    window.util.debounce(ChangeFilter, DEBOUNCE_INT);
+    window.util.debounce(changeFilter, DEBOUNCE_INT);
   };
 
-  var ChangeFilter = function () {
+  var changeFilter = function () {
     filterFeatures = mapFiltersAll.querySelectorAll('input:checked');
     filterFeaturesId = Array.from(filterFeatures).map(function (it) {
       return it.id.substring(7);
     });
-    console.log('Список элементов features в фильтре');
-    console.log(filterFeatures);
-    console.log('Id элементов features в фильтре');
-    console.log(filterFeaturesId);
+    // console.log('Список элементов features в фильтре');
+    // console.log(filterFeatures);
+    // console.log('Id элементов features в фильтре');
+    // console.log(filterFeaturesId);
 
     window.card.declarationCard.classList.add('hidden');
     getFilterData();
-    console.log('Данные, полученные с фильтра');
-    console.log(filterData);
+    // console.log('Данные, полученные с фильтра');
+    // console.log(filterData);
 
     window.backend.load(renderFilteredPins, window.util.onErrorMessage);
 

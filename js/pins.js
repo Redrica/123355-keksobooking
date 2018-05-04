@@ -3,6 +3,8 @@
 (function () {
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
+  var MAX_PINS_NUMBER = 5;
+
   var mapPins = document.querySelector('.map__pins');
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
@@ -16,8 +18,9 @@
   };
 
   var renderPins = function (data) {
+    var pinsNumber = data.length > MAX_PINS_NUMBER ? MAX_PINS_NUMBER : data.length;
     var pinsFragment = document.createDocumentFragment();
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < pinsNumber; i++) {
       pinsFragment.appendChild(createPins(i, data[i]));
     }
     mapPins.appendChild(pinsFragment);
