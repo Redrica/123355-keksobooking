@@ -7,6 +7,7 @@
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
   var mainPin = map.querySelector('.map__pin--main');
+  var lastTimeout;
 
   // var calculateRandomIndex = function (arr) {
   //   return Math.round(Math.random() * (arr.length - 1));
@@ -136,6 +137,13 @@
     document.addEventListener('keydown', onEscCloseCard);
   };
 
+  var debounce = function (action, debounceInt) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(action, debounceInt);
+  };
+
   window.util = {
     map: map,
     mapFiltersContainer: mapFiltersContainer,
@@ -152,6 +160,7 @@
     synchronizeFields: synchronizeFields,
     synchronizeTimesFields: synchronizeTimesFields,
     removePins: removePins,
-    onErrorMessage: onErrorMessage
+    onErrorMessage: onErrorMessage,
+    debounce: debounce
   };
 })();

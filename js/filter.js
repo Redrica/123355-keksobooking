@@ -9,7 +9,6 @@
   var filterData = {};
   var filterFeatures = [];
   var filterFeaturesId = [];
-  var lastTimeout;
 
   var getFilterData = function () {
     filterData.type = formElements['housing-type'].value;
@@ -79,43 +78,33 @@
     window.pins.renderPins(window.dataFiltered);
   };
 
-  var onChangeFilter = function (evt) {
-    var target = evt.target;
+  var onFilterChange = function () {
+    window.util.debounce(ChangeFilter, DEBOUNCE_INT);
+  };
 
+  var ChangeFilter = function () {
     filterFeatures = mapFiltersAll.querySelectorAll('input:checked');
     filterFeaturesId = Array.from(filterFeatures).map(function (it) {
       return it.id.substring(7);
     });
     console.log('Список элементов features в фильтре');
     console.log(filterFeatures);
-
     console.log('Id элементов features в фильтре');
     console.log(filterFeaturesId);
 
+    window.card.declarationCard.classList.add('hidden');
+    getFilterData();
+    console.log('Данные, полученные с фильтра');
+    console.log(filterData);
 
-    while (target !== mapFiltersAll) {
-      if (target.className === 'map__filter' || target.className === 'map__features') {
-        window.card.declarationCard.classList.add('hidden');
-        getFilterData();
-        console.log('Данные, полученные с фильтра');
-        console.log(filterData);
+    window.backend.load(renderFilteredPins, window.util.onErrorMessage);
 
-        if (lastTimeout) {
-          window.clearTimeout(lastTimeout);
-        }
-        lastTimeout = window.setTimeout(function () {
-          window.backend.load(renderFilteredPins, window.util.onErrorMessage);
-        }, DEBOUNCE_INT);
-
-        window.util.map.removeEventListener('click', window.card.onClickCardRender);
-        window.util.map.addEventListener('click', window.card.onFilterCardRender);
-      }
-      target = target.parentNode;
-    }
+    window.util.map.removeEventListener('click', window.card.onClickCardRender);
+    window.util.map.addEventListener('click', window.card.onFilterCardRender);
   };
 
   window.filter = {
     mapFiltersAll: mapFiltersAll,
-    onChangeFilter: onChangeFilter
+    onFilterChange: onFilterChange
   };
 })();

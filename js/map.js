@@ -56,7 +56,7 @@
     setDisabled();
 
     window.backend.load(onLoadRender, window.util.onErrorMessage);
-    window.filter.mapFiltersAll.addEventListener('change', window.filter.onChangeFilter);
+    window.filter.mapFiltersAll.addEventListener('change', window.filter.onFilterChange);
     window.form.title.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationType.addEventListener('change', window.form.onTypeChangeSetPrice);
     window.form.accommodationPrice.addEventListener('invalid', window.form.onInputInvalid);
