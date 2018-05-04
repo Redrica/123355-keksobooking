@@ -3,16 +3,18 @@
 (function () {
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
+  var DEBOUNCE_INT = 500;
   var mapFiltersAll = window.util.mapFiltersContainer.querySelector('.map__filters');
   var formElements = mapFiltersAll.elements;
   var filterData = {};
   var filterFeatures = [];
   var filterFeaturesId = [];
+  var lastTimeout;
 
   var getFilterData = function () {
     filterData.type = formElements['housing-type'].value;
     filterData.price = formElements['housing-price'].value;
-    filterData.rooms = formElements["housing-rooms"].value;
+    filterData.rooms = formElements['housing-rooms'].value;
     filterData.guests = formElements['housing-guests'].value;
     filterData.features = filterFeaturesId;
   };
@@ -52,12 +54,11 @@
       for (var i = 0; i < filterFeaturesId.length; i++) {
         for (var j = 0; j < it.offer.features.length; j++) {
           if (filterFeaturesId[i] === it.offer.features[j]) {
-            on++
-            // break
+            on++;
           }
         }
       }
-    return on === filterFeaturesId.length;
+      return on === filterFeaturesId.length;
     }
   };
 
@@ -65,18 +66,17 @@
     return compareType(it) && comparePrice(it) && compareRooms(it) && compareGuests(it) && compareFeatures(it);
   };
 
-
   var renderFilteredPins = function (loadedData) {
+    console.log('Загруженные данные');
+    console.log(loadedData);
 
     window.dataFiltered = loadedData.filter(compareAll);
-    console.log('Ниже вывод dataFiltered');
-    console.log(dataFiltered);
+    console.log('Отфильтрованные данные');
+    console.log(window.dataFiltered);
 
+    // удаляю пины и отрисовываю в соответствии с отфильтрованными данными
     window.util.removePins(window.pins.mapPins);
-
-    window.pins.renderPins(dataFiltered);
-    console.log('Ниже вывод loadedData');
-    console.log(loadedData);
+    window.pins.renderPins(window.dataFiltered);
   };
 
   var onChangeFilter = function (evt) {
@@ -86,23 +86,26 @@
     filterFeaturesId = Array.from(filterFeatures).map(function (it) {
       return it.id.substring(7);
     });
-
-    console.log('Ниже вывод filterFeaturesId');
-    console.log(filterFeaturesId);
-
-    console.log('Ниже вывод filterFeatures');
+    console.log('Список элементов features в фильтре');
     console.log(filterFeatures);
+
+    console.log('Id элементов features в фильтре');
+    console.log(filterFeaturesId);
 
 
     while (target !== mapFiltersAll) {
       if (target.className === 'map__filter' || target.className === 'map__features') {
         window.card.declarationCard.classList.add('hidden');
         getFilterData();
-
-        console.log('Ниже вывод filterData');
+        console.log('Данные, полученные с фильтра');
         console.log(filterData);
 
-        window.backend.load(renderFilteredPins, window.util.onErrorMessage);
+        if (lastTimeout) {
+          window.clearTimeout(lastTimeout);
+        }
+        lastTimeout = window.setTimeout(function () {
+          window.backend.load(renderFilteredPins, window.util.onErrorMessage);
+        }, DEBOUNCE_INT);
 
         window.util.map.removeEventListener('click', window.card.onClickCardRender);
         window.util.map.addEventListener('click', window.card.onFilterCardRender);
@@ -114,5 +117,5 @@
   window.filter = {
     mapFiltersAll: mapFiltersAll,
     onChangeFilter: onChangeFilter
-  }
+  };
 })();
