@@ -54,6 +54,8 @@
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     setDisabled();
+
+    window.backend.load(onLoadRender, window.util.onErrorMessage);
     window.filter.mapFiltersAll.addEventListener('change', window.filter.onChangeFilter);
     window.form.title.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationType.addEventListener('change', window.form.onTypeChangeSetPrice);
@@ -61,12 +63,7 @@
     window.form.accommodationPrice.setAttribute('min', '1000');
     window.form.accommodationPrice.placeholder = 1000;
     window.form.capacity.selectedIndex = 2;
-    window.backend.load(onLoadRender, window.util.onErrorMessage);
-
-
     window.util.map.addEventListener('click', window.card.onClickCardRender);
-
-
     window.util.mainPin.removeEventListener('mouseup', onClickActivatePage);
     window.util.mainPin.removeEventListener('keydown', onEnterActivatePage);
     window.util.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);

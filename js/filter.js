@@ -5,9 +5,6 @@
   var HIGH_PRICE = 50000;
   var mapFiltersAll = window.util.mapFiltersContainer.querySelector('.map__filters');
   var formElements = mapFiltersAll.elements;
-
-  var dataFromServer = [];
-  // var dataFiltered = [];
   var filterData = {};
   var filterFeatures = [];
   var filterFeaturesId = [];
@@ -52,15 +49,14 @@
       return false;
     } else {
       var on = 0;
-      for( var i = 0; i < filterFeaturesId.length; i++ ){
-        for( var j = 0; j < it.offer.features.length; j++ ){
-          if(filterFeaturesId[i] === it.offer.features[j]){
+      for (var i = 0; i < filterFeaturesId.length; i++) {
+        for (var j = 0; j < it.offer.features.length; j++) {
+          if (filterFeaturesId[i] === it.offer.features[j]) {
             on++
             // break
           }
         }
       }
-      // return on === arr.length ? true : false;
     return on === filterFeaturesId.length;
     }
   };
@@ -71,32 +67,31 @@
 
 
   var renderFilteredPins = function (loadedData) {
-    dataFromServer = loadedData;
-    console.log(dataFromServer);
 
-    // window.pins.renderPins(loadedData);
-
-    window.dataFiltered = dataFromServer.filter(compareAll);
+    window.dataFiltered = loadedData.filter(compareAll);
+    console.log('Ниже вывод dataFiltered');
     console.log(dataFiltered);
 
     window.util.removePins(window.pins.mapPins);
 
     window.pins.renderPins(dataFiltered);
-    console.log(dataFromServer);
+    console.log('Ниже вывод loadedData');
+    console.log(loadedData);
   };
 
   var onChangeFilter = function (evt) {
     var target = evt.target;
+
     filterFeatures = mapFiltersAll.querySelectorAll('input:checked');
     filterFeaturesId = Array.from(filterFeatures).map(function (it) {
       return it.id.substring(7);
     });
+
+    console.log('Ниже вывод filterFeaturesId');
     console.log(filterFeaturesId);
 
+    console.log('Ниже вывод filterFeatures');
     console.log(filterFeatures);
-
-
-
 
 
     while (target !== mapFiltersAll) {
@@ -104,23 +99,20 @@
         window.card.declarationCard.classList.add('hidden');
         getFilterData();
 
-        console.log(getFilterData());
-
+        console.log('Ниже вывод filterData');
         console.log(filterData);
+
         window.backend.load(renderFilteredPins, window.util.onErrorMessage);
+
+        window.util.map.removeEventListener('click', window.card.onClickCardRender);
+        window.util.map.addEventListener('click', window.card.onFilterCardRender);
       }
       target = target.parentNode;
     }
-
-    window.util.map.removeEventListener('click', window.card.onClickCardRender);
-    window.util.map.addEventListener('click', window.card.onFilterCardRender);
   };
-
-  mapFiltersAll.addEventListener('change', onChangeFilter);
 
   window.filter = {
     mapFiltersAll: mapFiltersAll,
-    // dataFiltered: dataFiltered,
     onChangeFilter: onChangeFilter
   }
 })();

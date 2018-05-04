@@ -72,12 +72,16 @@
 
   var cardCloseButton = declarationCard.querySelector('.popup__close');
 
+  var addCardCloseListeners = function () {
+    cardCloseButton.addEventListener('click', onClickCloseCard);
+    document.addEventListener('keydown', onEscCloseCard);
+  };
+
   var onClickCardRender = function (evt) {
     var target = evt.target;
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
-
         var onLoadRender = function (loadedData) {
           setCardData(window.card.declarationCard, dataAttr, loadedData);
         };
@@ -86,8 +90,7 @@
       }
       target = target.parentNode;
     }
-    cardCloseButton.addEventListener('click', onClickCloseCard);
-    document.addEventListener('keydown', onEscCloseCard);
+    addCardCloseListeners();
   };
 
   var onFilterCardRender = function (evt) {
@@ -95,14 +98,12 @@
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
-
         window.card.setCardData(window.card.declarationCard, dataAttr, window.dataFiltered);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;
     }
-    cardCloseButton.addEventListener('click', onClickCloseCard);
-    document.addEventListener('keydown', onEscCloseCard);
+    addCardCloseListeners();
   };
 
   var onClickCloseCard = function () {

@@ -195,11 +195,11 @@
     Array.prototype.forEach.call(window.map.featureCheckbox, function (item) {
       item.checked = false;
     });
+    reset.removeEventListener('click', onClickResetPage);
     window.form.title.removeEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationType.removeEventListener('change', window.form.onTypeChangeSetPrice);
     window.form.accommodationPrice.removeEventListener('invalid', window.form.onInputInvalid);
     window.map.adForm.removeEventListener('submit', onFormSubmit);
-    reset.removeEventListener('click', onClickResetPage);
     window.card.declarationCard.classList.add('hidden');
     window.util.mainPin.style.left = window.map.MAIN_PIN_LEFT_COORD + 'px';
     window.util.mainPin.style.top = window.map.MAIN_PIN_TOP_COORD + 'px';
