@@ -8,6 +8,7 @@
   var MAIN_PIN_TOP_COORD = 375;
   var HALF_SIZE = 0.5;
   var MOVE_LIMITS = {top: 63, right: 1135, bottom: 413, left: 0};
+  var DEBOUNCE_INT = 500;
 
   var mapFilter = window.util.mapFiltersContainer.querySelectorAll('.map__filter');
   var mapFeatures = window.util.mapFiltersContainer.querySelector('.map__features');
@@ -52,11 +53,30 @@
     window.pins.renderPins(window.util.dataFromServer);
   };
 
+  var renderFilteredPins = function () {
+    window.util.serverDataFiltered = window.util.dataFromServer.filter(window.filter.compareAll);
+    window.pins.renderPins(window.util.serverDataFiltered);
+  };
+
+  var onFilterChange = function () {
+    window.debounce(changeFilter, DEBOUNCE_INT);
+  };
+
+  var changeFilter = function () {
+    window.card.declarationCard.classList.add('hidden');
+    window.filter.getFilterData();
+
+    renderFilteredPins();
+
+    window.util.map.removeEventListener('click', window.card.onClickCardRender);
+    window.util.map.addEventListener('click', window.card.onFilterCardRender);
+  };
+
   var onClickActivatePage = function () {
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     window.backend.load(onLoadRender, window.util.onErrorMessage);
-    window.filter.mapFiltersAll.addEventListener('change', window.filter.onFilterChange);
+    window.filter.mapFiltersAll.addEventListener('change', onFilterChange);
     window.form.title.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationType.addEventListener('change', window.form.onTypeChangeSetPrice);
     window.form.accommodationPrice.addEventListener('invalid', window.form.onInputInvalid);

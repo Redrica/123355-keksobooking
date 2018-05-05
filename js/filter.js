@@ -3,8 +3,8 @@
 (function () {
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
-  var DEBOUNCE_INT = 500;
   var SYMBOLS_TO_CROP = 7;
+
   var mapFiltersAll = window.util.mapFiltersContainer.querySelector('.map__filters');
   var formElements = mapFiltersAll.elements;
   var filterData = {};
@@ -58,28 +58,9 @@
     return compareParam(it, FilterParam.TYPE) && comparePrice(it) && compareParam(it, FilterParam.ROOMS) && compareParam(it, FilterParam.GUESTS) && compareFeatures(it);
   };
 
-  var renderFilteredPins = function () {
-    window.util.serverDataFiltered = window.util.dataFromServer.filter(compareAll);
-    window.pins.renderPins(window.util.serverDataFiltered);
-  };
-
-  var onFilterChange = function () {
-    window.debounce(changeFilter, DEBOUNCE_INT);
-  };
-
-  var changeFilter = function () {
-    window.card.declarationCard.classList.add('hidden');
-    getFilterData();
-    console.log(getFilterData());
-
-    renderFilteredPins();
-
-    window.util.map.removeEventListener('click', window.card.onClickCardRender);
-    window.util.map.addEventListener('click', window.card.onFilterCardRender);
-  };
-
   window.filter = {
     mapFiltersAll: mapFiltersAll,
-    onFilterChange: onFilterChange
+    getFilterData: getFilterData,
+    compareAll: compareAll
   };
 })();

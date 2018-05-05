@@ -8,6 +8,7 @@
   var BUNGALO = 'Бунгало';
   var HOUSE = 'Дом';
   var PALACE = 'Дворец';
+
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
   var createElementList = function (arr, tagName, classNameTemplate, className, parent) {

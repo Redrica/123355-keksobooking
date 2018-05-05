@@ -10,7 +10,6 @@
   var mainPin = map.querySelector('.map__pin--main');
   var SelectedIndex = {ZERO: '0', FIRST: '1', SECOND: '2'};
   var dataFromServer = [];
-
   var serverDataFiltered = [];
 
   var deleteInner = function (element) {
@@ -113,10 +112,7 @@
     mainPin: mainPin,
     SelectedIndex: SelectedIndex,
     dataFromServer: dataFromServer,
-
     serverDataFiltered: serverDataFiltered,
-
-
     deleteInner: deleteInner,
     isEscEvent: isEscEvent,
     isEnterEvent: isEnterEvent,
