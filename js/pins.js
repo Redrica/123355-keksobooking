@@ -18,14 +18,12 @@
   };
 
   var renderPins = function (data) {
-    // var pinsNumber = data.length > MAX_PINS_NUMBER ? MAX_PINS_NUMBER : data.length;
+    window.util.removePins(mapPins);
+
+    var pinsNumber = data.length > MAX_PINS_NUMBER ? MAX_PINS_NUMBER : data.length;
     var pinsFragment = document.createDocumentFragment();
-    // for (var i = 0; i < pinsNumber; i++) {
-
-      for (var i = 0; i < data.length; i++) {
-
-
-        pinsFragment.appendChild(createPins(i, data[i]));
+    for (var i = 0; i < pinsNumber; i++) {
+      pinsFragment.appendChild(createPins(i, data[i]));
     }
     mapPins.appendChild(pinsFragment);
   };

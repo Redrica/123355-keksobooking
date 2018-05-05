@@ -12,6 +12,7 @@
   var filterFeaturesId = [];
   var FilterParam = {TYPE: 'type', ROOMS: 'rooms', GUESTS: 'guests'};
 
+
   var getFilterData = function () {
     filterData.type = formElements['housing-type'].value;
     filterData.price = formElements['housing-price'].value;
@@ -55,7 +56,6 @@
 
   var renderFilteredPins = function (loadedData) {
     window.dataFiltered = loadedData.filter(compareAll);
-    window.util.removePins(window.pins.mapPins);
     window.pins.renderPins(window.dataFiltered);
   };
 
