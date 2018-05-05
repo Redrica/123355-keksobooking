@@ -59,18 +59,17 @@
   var checkPriceField = function () {
     if (!accommodationPrice.validity.valid) {
       return true;
-    } else {
-      var room = accommodationType.value;
-      switch (room) {
-        case 'flat':
-          return accommodationPrice.value < FLAT_MIN_PRICE;
-        case 'bundalo':
-          return accommodationPrice.value >= BUNGALO_MIN_PRICE;
-        case 'house':
-          return accommodationPrice.value < HOUSE_MIN_PRICE;
-        case 'palace':
-          return accommodationPrice.value < PALACE_MIN_PRICE;
-      }
+    }
+    var room = accommodationType.value;
+    switch (room) {
+      case 'flat':
+        return accommodationPrice.value < FLAT_MIN_PRICE;
+      case 'bundalo':
+        return accommodationPrice.value >= BUNGALO_MIN_PRICE;
+      case 'house':
+        return accommodationPrice.value < HOUSE_MIN_PRICE;
+      case 'palace':
+        return accommodationPrice.value < PALACE_MIN_PRICE;
     }
     return room;
   };
@@ -178,10 +177,9 @@
         capacity.classList.remove('invalid-field');
         errorCapacityCondition.textContent = '';
       });
+    } else {
+      window.backend.upload(new FormData(window.map.adForm), onSuccessUpload, window.util.onErrorMessage);
     }
-
-    window.backend.upload(new FormData(window.map.adForm), onSuccessUpload, window.util.onErrorMessage);
-    evt.preventDefault();
   };
 
   var setDefaultCondition = function () {

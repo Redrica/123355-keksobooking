@@ -48,17 +48,16 @@
       return true;
     } else if (it.offer.features.length === 0) {
       return false;
-    } else {
-      var on = 0;
-      for (var i = 0; i < filterFeaturesId.length; i++) {
-        for (var j = 0; j < it.offer.features.length; j++) {
-          if (filterFeaturesId[i] === it.offer.features[j]) {
-            on++;
-          }
+    }
+    var on = 0;
+    for (var i = 0; i < filterFeaturesId.length; i++) {
+      for (var j = 0; j < it.offer.features.length; j++) {
+        if (filterFeaturesId[i] === it.offer.features[j]) {
+          on++;
         }
       }
-      return on === filterFeaturesId.length;
     }
+    return on === filterFeaturesId.length;
   };
 
   var compareAll = function (it) {
@@ -66,13 +65,7 @@
   };
 
   var renderFilteredPins = function (loadedData) {
-    // console.log('Загруженные данные');
-    // console.log(loadedData);
-
     window.dataFiltered = loadedData.filter(compareAll);
-    // console.log('Отфильтрованные данные');
-    // console.log(window.dataFiltered);
-
     window.util.removePins(window.pins.mapPins);
     window.pins.renderPins(window.dataFiltered);
   };
@@ -86,16 +79,9 @@
     filterFeaturesId = Array.from(filterFeatures).map(function (it) {
       return it.id.substring(7);
     });
-    // console.log('Список элементов features в фильтре');
-    // console.log(filterFeatures);
-    // console.log('Id элементов features в фильтре');
-    // console.log(filterFeaturesId);
 
     window.card.declarationCard.classList.add('hidden');
     getFilterData();
-    // console.log('Данные, полученные с фильтра');
-    // console.log(filterData);
-
     window.backend.load(renderFilteredPins, window.util.onErrorMessage);
 
     window.util.map.removeEventListener('click', window.card.onClickCardRender);

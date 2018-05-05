@@ -31,10 +31,13 @@
   };
 
   var changeDisabledAttr = function (elem) {
-    if (elem.disabled) {
-      elem.disabled = false;
-    } else {
-      elem.disabled = true;
+    switch (elem.disabled) {
+      case true:
+        elem.disabled = false;
+        break;
+      case false:
+        elem.disabled = true;
+        break;
     }
   };
 
