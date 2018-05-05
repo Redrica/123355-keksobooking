@@ -86,10 +86,7 @@
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
-        var onLoadRender = function (loadedData) {
-          setCardData(window.card.declarationCard, dataAttr, loadedData);
-        };
-        window.backend.load(onLoadRender, window.util.onErrorMessage);
+        setCardData(window.card.declarationCard, dataAttr, window.util.dataFromServer);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;
@@ -102,7 +99,7 @@
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
-        window.card.setCardData(window.card.declarationCard, dataAttr, window.dataFiltered);
+        window.card.setCardData(window.card.declarationCard, dataAttr, window.util.serverDataFiltered);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;

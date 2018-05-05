@@ -9,6 +9,9 @@
   var mapFiltersContainer = document.querySelector('.map__filters-container');
   var mainPin = map.querySelector('.map__pin--main');
   var SelectedIndex = {ZERO: '0', FIRST: '1', SECOND: '2'};
+  var dataFromServer = [];
+
+  var serverDataFiltered = [];
 
   var deleteInner = function (element) {
     while (element.firstChild) {
@@ -104,13 +107,16 @@
     document.addEventListener('keydown', onEscCloseCard);
   };
 
-  var dataFromServer = [];
-
   window.util = {
     map: map,
     mapFiltersContainer: mapFiltersContainer,
     mainPin: mainPin,
     SelectedIndex: SelectedIndex,
+    dataFromServer: dataFromServer,
+
+    serverDataFiltered: serverDataFiltered,
+
+
     deleteInner: deleteInner,
     isEscEvent: isEscEvent,
     isEnterEvent: isEnterEvent,
@@ -118,8 +124,6 @@
     synchronizeFields: synchronizeFields,
     synchronizeTimesFields: synchronizeTimesFields,
     removePins: removePins,
-    onErrorMessage: onErrorMessage,
-
-    dataFromServer: dataFromServer
+    onErrorMessage: onErrorMessage
   };
 })();
