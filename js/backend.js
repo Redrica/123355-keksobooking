@@ -3,6 +3,8 @@
 (function () {
   var URL_GET = 'https://js.dump.academy/keksobooking/data';
   var URL_POST = 'https://js.dump.academy/keksobooking';
+  var TIMEOUT_LOAD_UPLOAD = 5000;
+  var Code = {SUCCESS: 200, BAD_REQUEST: 400, NOT_FOUND: 404};
 
   var load = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -11,13 +13,13 @@
     xhr.addEventListener('load', function () {
       var error;
       switch (xhr.status) {
-        case 200:
+        case Code.SUCCESS:
           onLoad(xhr.response);
           break;
-        case 400:
+        case Code.BAD_REQUEST:
           error = 'Неверный запрос';
           break;
-        case 404:
+        case Code.NOT_FOUND:
           error = 'Данные не найдены';
           break;
         default:
@@ -34,7 +36,7 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 5000;
+    xhr.timeout = TIMEOUT_LOAD_UPLOAD;
 
     xhr.open('GET', URL_GET);
     xhr.send();
@@ -45,7 +47,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === Code.SUCCESS) {
         onLoad(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -58,7 +60,7 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 5000;
+    xhr.timeout = TIMEOUT_LOAD_UPLOAD;
 
     xhr.open('POST', URL_POST);
     xhr.send(data);

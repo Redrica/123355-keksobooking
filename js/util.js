@@ -8,7 +8,6 @@
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
   var mainPin = map.querySelector('.map__pin--main');
-  var lastTimeout;
   var SelectedIndex = {ZERO: '0', FIRST: '1', SECOND: '2'};
 
   var deleteInner = function (element) {
@@ -105,13 +104,6 @@
     document.addEventListener('keydown', onEscCloseCard);
   };
 
-  var debounce = function (action, debounceInt) {
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(action, debounceInt);
-  };
-
   window.util = {
     map: map,
     mapFiltersContainer: mapFiltersContainer,
@@ -124,7 +116,6 @@
     synchronizeFields: synchronizeFields,
     synchronizeTimesFields: synchronizeTimesFields,
     removePins: removePins,
-    onErrorMessage: onErrorMessage,
-    debounce: debounce
+    onErrorMessage: onErrorMessage
   };
 })();

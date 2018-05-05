@@ -4,11 +4,13 @@
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
   var DEBOUNCE_INT = 500;
+  var SYMBOLS_TO_CROP = 7;
   var mapFiltersAll = window.util.mapFiltersContainer.querySelector('.map__filters');
   var formElements = mapFiltersAll.elements;
   var filterData = {};
   var filterFeatures = [];
   var filterFeaturesId = [];
+  var FilterParam = {TYPE: 'type', ROOMS: 'rooms', GUESTS: 'guests'};
 
   var getFilterData = function () {
     filterData.type = formElements['housing-type'].value;
@@ -18,8 +20,8 @@
     filterData.features = filterFeaturesId;
   };
 
-  var compareType = function (it) {
-    return filterData.type === 'any' ? true : it.offer.type === filterData.type;
+  var compareParam = function (it, param) {
+    return filterData[param] === 'any' ? true : it.offer[param].toString() === filterData[param];
   };
 
   var comparePrice = function (it) {
@@ -35,33 +37,20 @@
     }
   };
 
-  var compareRooms = function (it) {
-    return filterData.rooms === 'any' ? true : it.offer.rooms.toString() === filterData.rooms;
-  };
-
-  var compareGuests = function (it) {
-    return filterData.guests === 'any' ? true : it.offer.guests.toString() === filterData.guests;
-  };
-
   var compareFeatures = function (it) {
-    if ((it.offer.features.length === 0 && filterFeaturesId.length === 0) || filterFeaturesId.length === 0) {
-      return true;
-    } else if (it.offer.features.length === 0) {
-      return false;
-    }
-    var on = 0;
+    var count = 0;
     for (var i = 0; i < filterFeaturesId.length; i++) {
       for (var j = 0; j < it.offer.features.length; j++) {
         if (filterFeaturesId[i] === it.offer.features[j]) {
-          on++;
+          count++;
         }
       }
     }
-    return on === filterFeaturesId.length;
+    return count === filterFeaturesId.length;
   };
 
   var compareAll = function (it) {
-    return compareType(it) && comparePrice(it) && compareRooms(it) && compareGuests(it) && compareFeatures(it);
+    return compareParam(it, FilterParam.TYPE) && comparePrice(it) && compareParam(it, FilterParam.ROOMS) && compareParam(it, FilterParam.GUESTS) && compareFeatures(it);
   };
 
   var renderFilteredPins = function (loadedData) {
@@ -71,13 +60,13 @@
   };
 
   var onFilterChange = function () {
-    window.util.debounce(changeFilter, DEBOUNCE_INT);
+    window.debounce(changeFilter, DEBOUNCE_INT);
   };
 
   var changeFilter = function () {
     filterFeatures = mapFiltersAll.querySelectorAll('input:checked');
     filterFeaturesId = Array.from(filterFeatures).map(function (it) {
-      return it.id.substring(7);
+      return it.id.substring(SYMBOLS_TO_CROP);
     });
 
     window.card.declarationCard.classList.add('hidden');

@@ -7,7 +7,7 @@
   var MAIN_PIN_LEFT_COORD = 570;
   var MAIN_PIN_TOP_COORD = 375;
   var HALF_SIZE = 0.5;
-  var MOVE_LIMITS = {top: 65, right: 1135, bottom: 625, left: 0};
+  var MOVE_LIMITS = {top: 63, right: 1135, bottom: 413, left: 0};
 
   var mapFilter = window.util.mapFiltersContainer.querySelectorAll('.map__filter');
   var mapFeatures = window.util.mapFiltersContainer.querySelector('.map__features');
