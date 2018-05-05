@@ -17,6 +17,8 @@
   var addressField = adForm.querySelector('[name=address]');
   var featureCheckbox = adForm.querySelectorAll('.feature__checkbox');
 
+  var serverData = [];
+
   var setDisabled = function () {
     Array.prototype.forEach.call(mapFilter, function (elem) {
       window.util.changeDisabledAttr(elem);
@@ -48,14 +50,22 @@
   };
 
   var onLoadRender = function (loadedData) {
+    window.util.dataFromServer = loadedData;
+
+    console.log('Вывод из onLoadRender');
+    console.log(window.util.dataFromServer);
     window.pins.renderPins(loadedData);
   };
 
   var onClickActivatePage = function () {
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
+
+
     window.backend.load(onLoadRender, window.util.onErrorMessage);
     window.filter.mapFiltersAll.addEventListener('change', window.filter.onFilterChange);
+
+
     window.form.title.addEventListener('invalid', window.form.onInputInvalid);
     window.form.accommodationType.addEventListener('change', window.form.onTypeChangeSetPrice);
     window.form.accommodationPrice.addEventListener('invalid', window.form.onInputInvalid);
@@ -149,6 +159,9 @@
     adForm: adForm,
     addressField: addressField,
     featureCheckbox: featureCheckbox,
+
+    serverData: serverData,
+
     setDisabled: setDisabled,
     onClickActivatePage: onClickActivatePage,
     onEnterActivatePage: onEnterActivatePage,

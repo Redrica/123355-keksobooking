@@ -104,6 +104,8 @@
     document.addEventListener('keydown', onEscCloseCard);
   };
 
+  var dataFromServer = [];
+
   window.util = {
     map: map,
     mapFiltersContainer: mapFiltersContainer,
@@ -116,6 +118,8 @@
     synchronizeFields: synchronizeFields,
     synchronizeTimesFields: synchronizeTimesFields,
     removePins: removePins,
-    onErrorMessage: onErrorMessage
+    onErrorMessage: onErrorMessage,
+
+    dataFromServer: dataFromServer
   };
 })();
