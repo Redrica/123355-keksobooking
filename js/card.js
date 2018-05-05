@@ -82,12 +82,12 @@
     document.addEventListener('keydown', onEscCloseCard);
   };
 
-  var onClickCardRender = function (evt) {
+  var cardRender = function (evt, data) {
     var target = evt.target;
     while (target !== window.util.map) {
       if (target.className === 'map__pin') {
         var dataAttr = target.getAttribute('data-number');
-        setCardData(window.card.declarationCard, dataAttr, window.util.dataFromServer);
+        setCardData(window.card.declarationCard, dataAttr, data);
         declarationCard.classList.remove('hidden');
       }
       target = target.parentNode;
@@ -95,17 +95,12 @@
     addCardCloseListeners();
   };
 
+  var onClickCardRender = function (evt) {
+    cardRender(evt, window.util.dataFromServer);
+  };
+
   var onFilterCardRender = function (evt) {
-    var target = evt.target;
-    while (target !== window.util.map) {
-      if (target.className === 'map__pin') {
-        var dataAttr = target.getAttribute('data-number');
-        window.card.setCardData(window.card.declarationCard, dataAttr, window.util.serverDataFiltered);
-        declarationCard.classList.remove('hidden');
-      }
-      target = target.parentNode;
-    }
-    addCardCloseListeners();
+    cardRender(evt, window.util.serverDataFiltered);
   };
 
   var onClickCloseCard = function () {
@@ -120,7 +115,6 @@
 
   window.card = {
     declarationCard: declarationCard,
-    setCardData: setCardData,
     onClickCardRender: onClickCardRender,
     onFilterCardRender: onFilterCardRender
   };

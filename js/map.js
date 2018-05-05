@@ -49,7 +49,7 @@
   };
 
   var onLoadRender = function (loadedData) {
-    window.util.dataFromServer = loadedData;
+    window.util.dataFromServer = loadedData.filter(window.filter.compareAll);
     window.pins.renderPins(window.util.dataFromServer);
   };
 
@@ -73,6 +73,7 @@
   };
 
   var onClickActivatePage = function () {
+    window.filter.getFilterData();
     window.util.map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     window.backend.load(onLoadRender, window.util.onErrorMessage);
@@ -89,7 +90,7 @@
     window.util.synchronizeTimesFields(window.form.checkIn, window.form.checkOut);
     window.util.synchronizeTimesFields(window.form.checkOut, window.form.checkIn);
     window.util.synchronizeFields(window.form.rooms, window.form.capacity, window.form.ROOM_NUMBERS, window.form.CAPACITY);
-    window.map.adForm.addEventListener('submit', window.form.onFormSubmit);
+    adForm.addEventListener('submit', window.form.onFormSubmit);
     window.form.reset.addEventListener('click', window.form.onClickResetPage);
 
     setDisabled();
