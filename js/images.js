@@ -24,12 +24,12 @@
   };
 
   var renderImgPreview = function (preview, file) {
-      var reader = new FileReader();
-      reader.addEventListener('load', function () {
-        preview.src = reader.result;
-      });
+    var reader = new FileReader();
+    reader.addEventListener('load', function () {
+      preview.src = reader.result;
+    });
 
-      reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
   };
 
   var onChangeRenderImgPreview = function () {
